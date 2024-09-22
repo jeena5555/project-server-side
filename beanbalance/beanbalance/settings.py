@@ -79,11 +79,10 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "beanbalance_db",
         "USER": "postgres",
-        "PASSWORD": "5335",
-        "HOST": "127.0.0.1",
-        "PORT": "5433",
+        "PASSWORD": "130803",
+        "HOST": "localhost",
+        "PORT": "5432",
     }
-
 }
 
 
