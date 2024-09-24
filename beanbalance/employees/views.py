@@ -1,22 +1,15 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import logout, login
-from django.contrib import messages
+from django.shortcuts import render
 from django.views import View
 
+from django.contrib.auth.models import User
 
-class LoginView(View):
-
-    def get(self, request):
-        # code here
-        return render(request, 'login.html', {"form": None})
-
-    def post(self, request):
-        # code here
-        pass
+# Create your views here.
 
 
-class LogoutView(View):
+class EmployeeView(View):
+    template_name = 'employees.html'
 
     def get(self, request):
-        # code here
-        pass
+        employees = User.objects.all()
+
+        return render(request, self.template_name, {"employees": employees})
