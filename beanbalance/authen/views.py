@@ -15,7 +15,10 @@ class LoginView(View):
         if form.is_valid():
             user = form.get_user()
             login(request,user)
-            return redirect('blog-list')
+            return redirect('test')
+        else:
+            messages.error(request, "Username or password is not correct")
+            return render(request, 'login.html', {"form": form})
 
         return render(request,'login.html', {"form":form})
 
@@ -26,3 +29,9 @@ class LogoutView(View):
     def get(self, request):
         logout(request)
         return redirect('login')
+
+
+class TestView(View):
+
+    def get(self, request):
+        return render(request, 'test.html')

@@ -2,12 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # class Account = auth_user
-    # field : username , password
+# field : username , password
 
 # class Position = auth_group
-    # field : name
+# field : name
 
 ## auth_user many to many with auth_group
+
 
 class Employee(models.Model):
     class Gender(models.TextChoices):
