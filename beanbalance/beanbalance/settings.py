@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'employees',
     'authen',
+    'menu',
+    'order',
+    'inventory'
 ]
 
 MIDDLEWARE = [

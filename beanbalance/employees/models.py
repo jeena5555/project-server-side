@@ -1,14 +1,15 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-# Create your models here.
+# class Account = auth_user
+    # field : username , password
 
-class Account(models.Model):
-    account_name = models.CharField(max_length=100)
-    password = models.CharField(max_length=100)
+# class Position = auth_group
+    # field : name
 
+## auth_user many to many with auth_group
 
 class Employee(models.Model):
-
     class Gender(models.TextChoices):
         M = "M", "Male"
         F = "F", "Female"
@@ -21,12 +22,4 @@ class Employee(models.Model):
     hire_date = models.DateField()
     contact_number = models.CharField(max_length=20)
     salary = models.DecimalField(max_digits=10, decimal_places=2)
-    position = models.ForeignKey("Position", on_delete=models.CASCADE)
-    account = models.OneToOneField("Account", on_delete=models.CASCADE)
-
-
-class Position(models.Model):
-    name = models.CharField(max_length=150)
-    description = models.TextField(blank=True, null=True)
-
-
+    account = models.OneToOneField(User, on_delete=models.CASCADE)
