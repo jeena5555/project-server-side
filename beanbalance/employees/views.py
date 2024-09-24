@@ -13,3 +13,7 @@ class EmployeeView(View):
         employees = User.objects.all()
 
         return render(request, self.template_name, {"employees": employees})
+
+class SidebarView(View):
+    def get(self, request):
+        return render(request, 'sidebar.html')
