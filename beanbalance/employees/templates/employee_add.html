@@ -1,0 +1,117 @@
+{% extends 'layout.html'%}
+{%block content%} 
+<div class="w-1/2 p-8 text-black" style="background-color: #F5F4F2; color: #ffffff" >
+  <!-- Profile Edit Form -->
+  <div class="flex items-center mb-4">
+    <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-full">P</div>
+    <h2 class="ml-4 text-2xl text-black">Peam</h2>
+    <button class="ml-auto">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 18h12l3-18H3zm9 4v7"></path>
+      </svg>
+    </button>
+  </div>
+
+  <h3 class="text-lg font-semibold mb-4 text-black">Edit</h3>
+
+  <!-- Form Fields -->
+  <form action="#">
+    <div class="grid grid-cols-1 gap-4">
+      <div>
+        <label for="first-name" class="block mb-1 text-black">First Name:</label>
+        <input
+          type="text"
+          id="first-name"
+          value=""
+          class="w-full p-2 border border-gray-300 rounded-full text-black"
+        />
+      </div>
+      <div>
+        <label for="last-name" class="block mb-1 text-black">Last Name:</label>
+        <input
+          type="text"
+          id="last-name"
+          value=""
+          class="w-full p-2 border border-gray-300 rounded-full text-black"
+        />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 mt-4">
+      <div>
+        <label for="account" class="block mb-1 text-black">Account:</label>
+        <input
+          type="text"
+          id="account"
+          value=""
+          class="w-full p-2 border border-gray-300 rounded-full text-black"
+        />
+      </div>
+      <div>
+        <label for="password" class="block mb-1 text-black">Password:</label>
+        <input
+          type="password"
+          id="password"
+          value="Enter your password"
+          class="w-full p-2 border border-gray-300 rounded-full text-black"
+        />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 mt-4">
+      <div>
+        <label for="gender" class="block mb-1 text-black">Gender:</label>
+        <select id="gender" class="w-full p-2 border border-gray-300 rounded-full text-black">
+          <option>Female</option>
+          <option>Male</option>
+        </select>
+      </div>
+      <div>
+        <label for="birth-date" class="block mb-1 text-black">Birth Date:</label>
+        <input
+          type="date"
+          id="birth-date"
+          value="xx/xx/xxxx"
+          class="w-full p-2 border border-gray-300 rounded-full text-black"
+        />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 mt-4">
+      <div>
+        <label for="hire-date" class="block mb-1 text-black">Hire Date:</label>
+        <input
+          type="date"
+          id="hire-date"
+          value="xx/xx/xxxx"
+          class="w-full p-2 border border-gray-300 rounded-full text-black"
+        />
+      </div>
+      <div>
+        <label for="position" class="block mb-1 text-black">Position:</label>
+        <select id="position" class="w-full p-2 border border-gray-300 rounded-full">
+          <option>Manager</option>
+          <option>Cashier</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <label for="salary" class="block mb-1 text-black">Salary:</label>
+      <input
+        type="text"
+        id="salary"
+        value=""
+        class="w-full p-2 border border-gray-300 rounded-full text-black"
+      />
+    </div>
+
+    <button
+      type="submit"
+      class="mt-6 w-full bg-blue-600 text-white py-2 rounded-full"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+{% endblock %}

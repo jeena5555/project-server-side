@@ -14,6 +14,10 @@ class EmployeeView(View):
 
         return render(request, self.template_name, {"employees": employees})
 
-class SidebarView(View):
+class EmployeeManageView(View):
     def get(self, request):
-        return render(request, 'sidebar.html')
+        return render(request, 'employee_manage.html')
+
+class EmployeeAddView(View):
+    def get(self, request):
+        return render(request, 'employee_add.html')
