@@ -20,4 +20,4 @@ class EmployeeManageView(View):
 
 class EmployeeAddView(View):
     def get(self, request):
-        return render(request, 'employee_add.html')
+        return render(request, 'employee_add_position.html')

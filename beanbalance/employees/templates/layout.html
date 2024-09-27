@@ -1,9 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
   <title>{% block title %}employee{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -13,7 +15,7 @@
     <!-- Logo and Date Section -->
     <div class="p-6">
       <div class="flex items-center justify-center mb-6">
-        <img src="../static/images/bean_balance_logo.png" alt="Bean Balance Logo" class="w-60 h-auto mb-4">
+        <img src="{% static 'images/bean_balance_logo.png' %}" alt="Bean Balance Logo" class="w-60 h-auto mb-4">
       </div>
       <div class="text-center text-4xl font-bold mb-1">Mon Jun</div>
       <div class="text-center text-6xl font-bold">10</div>
