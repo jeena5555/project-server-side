@@ -1,0 +1,80 @@
+/* styles.css */
+
+/* General form layout */
+form {
+  max-width: 400px;
+  margin: 0 auto; /* Centers the form */
+  padding: 20px;
+  background-color: #F5F4F2; /* Light gray background */
+  border-radius: 20px; /* Rounded corners for the form */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow */
+}
+
+/* Form heading */
+form h2 {
+  font-size: 38px;
+  font-weight: bold;
+  color: #111827; /* Darker text color */
+  margin-bottom: 20px;
+}
+
+/* Labels */
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #111827; /* Dark text */
+}
+
+/* Input fields */
+input[type="text"],
+input[type="password"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #e5e7eb; /* Border color similar to Tailwind's border-gray-300 */
+  border-radius: 9999px; /* Fully rounded input fields */
+  background-color: #ffffff; /* White background */
+  color: #111827; /* Dark text */
+  font-size: 14px;
+  box-sizing: border-box;
+  margin-bottom: 16px; /* Spacing between form elements */
+}
+
+/* Input and button icons (SVG) */
+input[type="password"] {
+  background-image: url('lock-icon.svg');
+  background-position: right 10px center;
+  background-repeat: no-repeat;
+  background-size: 20px;
+}
+
+/* Button styles */
+button {
+  width: 100%;
+  background-color: #111827; /* Dark background for the button */
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 9999px; /* Fully rounded button */
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #000000; /* Slightly darker on hover */
+}
+
+/* Adjust spacing */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 16px; /* Space between input fields */
+}
+
+.mt-4 {
+  margin-top: 16px;
+}
