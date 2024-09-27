@@ -13,3 +13,11 @@ class EmployeeView(View):
         employees = User.objects.all()
 
         return render(request, self.template_name, {"employees": employees})
+
+class EmployeeManageView(View):
+    def get(self, request):
+        return render(request, 'employee_manage.html')
+
+class EmployeeAddView(View):
+    def get(self, request):
+        return render(request, 'employee_add_position.html')
