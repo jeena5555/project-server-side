@@ -12,21 +12,20 @@ class MenuView(View):
     template_name = "menu.html"
 
     def get(self, request):
-        menus = Menu.objects.all()[:10]
+        menus = Menu.objects.all()
         categories = Category.objects.all()
+
+        selected_category = request.GET.get('category', 'ALL')
+
+        if selected_category == 'ALL':
+            menus = Menu.objects.all()
+        else:
+            menus = Menu.objects.filter(category__name=selected_category)
         context = {
             "menus": menus,
-            "categories": categories
+            "categories": categories,
+            "selected_category": selected_category
         }
         return render(request, self.template_name, context)
-
-@csrf_exempt
-def update_cart(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        # Here you would typically update the cart in the session or database
-        # For this example, we'll just return the received data
-        return JsonResponse({'status': 'success', 'cart': data})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 
