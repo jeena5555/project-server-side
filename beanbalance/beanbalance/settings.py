@@ -67,6 +67,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'employees.context_processors.current_date',
             ],
         },
     },
@@ -83,9 +84,9 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "beanbalance_db",
         "USER": "postgres",
-        "PASSWORD": "130803",
+        "PASSWORD": "5335",
         "HOST": "localhost",
-        "PORT": "5432",
+        "PORT": "5433",
     }
 }
 

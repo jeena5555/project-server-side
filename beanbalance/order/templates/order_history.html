@@ -1,0 +1,56 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% load multi_price %}
+{% block title %}Payment{% endblock %}
+{% block content %}
+    <div class="bg-[#292C2D] h-screen container mx-auto px-8 py-8 overflow-hidden">
+        <div class="header sticky top-0 bg-[#292C2D] z-10 mb-6">
+            <h1 class="text-white text-4xl font-bold mb-6">Order</h1>
+            <form method="get" class="flex gap-6">
+                {{ form.order_date|add_class:"border-2 text-gray-700 rounded-lg py-2 px-4" }}
+
+                <button type="submit" class="bg-[#C2DBE9] text-black font-semibold py-2 px-6 rounded-lg hover:bg-blue-600 transition duration-300 ease-in-out shadow-md">
+                        Select
+                </button>
+            </form>
+        </div>
+        <main class="overflow-y-auto h-[calc(100vh-120px)]"> <!-- Adjusted the height -->
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 pb-20">
+                {% for i in orders %}
+                <div class="bg-white text-gray-900 rounded-lg p-6 flex flex-col justify-between">
+                    <!-- Order Header -->
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">Order #{{ i.order.id }}</h2>
+                        <span class="text-gray-600">{{ i.order.employee.username }}</span>
+                    </div>
+
+                    <!-- Order Date and Time -->
+                    <p class="text-gray-600 mb-4">{{ i.order.order_date|date:"d M Y" }},  {{ i.order.order_time }}</p>
+
+                    <!-- Order Menu Table -->
+                    <table class="w-full mb-4">
+                        <tbody>
+                            {% for order_menu in i.order_menus %}
+                            <tr>
+                                <td class="w-1/4">{{ order_menu.quantity }}</td>
+                                <td class="w-1/4">{{ order_menu.menu.name }}</td>
+                                <td class="w-1/4 text-right">@{{ order_menu.menu.price }}</td>
+                                <td class="w-1/4 text-right">{{ order_menu.menu.price|multiply:order_menu.quantity }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <hr class="border-t border-gray-300 my-4">
+
+                    <!-- Order Summary Footer -->
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">x {{ i.order_menus|total_quantity }} menu</span>
+                        <span class="text-xl font-bold">{{ i.order.amount }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+{% endblock %}
