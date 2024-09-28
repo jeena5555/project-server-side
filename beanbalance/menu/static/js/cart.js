@@ -93,19 +93,16 @@ const cart = {
             const searchTerm = this.value.toLowerCase();
             document.querySelectorAll('.menu-item').forEach(item => {
                 const name = item.querySelector('h3').textContent.toLowerCase();
-                const description = item.querySelector('p:nth-child(3)').textContent.toLowerCase();
-                item.style.display = (name.includes(searchTerm) || description.includes(searchTerm)) ? 'block' : 'none';
+                console.log('Name:', name);
+                if (name.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+
             });
         });
 
-        document.querySelectorAll('.category-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const category = this.getAttribute('data-category');
-                document.querySelectorAll('.menu-item').forEach(item => {
-                    item.style.display = (category === 'All' || item.getAttribute('data-category') === category) ? 'block' : 'none';
-                });
-            });
-        });
     }
 };
 
