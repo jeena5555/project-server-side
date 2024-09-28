@@ -23,5 +23,5 @@ urlpatterns = [
     path('employees/', include('employees.urls')),
     # path('inventory/', include('inventory.urls')),
     path('menu/', include('menu.urls')),
-    # path('order/', include('order.urls')),
+    path('order/', include('order.urls')),
 ]

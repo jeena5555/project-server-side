@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.views import View
 from menu.models import Menu, Category
+from order.models import Order
 
 # Create your views here.
 
@@ -28,14 +29,4 @@ def update_cart(request):
         return JsonResponse({'status': 'success', 'cart': data})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
-# class PaymentView(View):
-#     template_name = "payment.html"
 
-#     def get(self, request):
-#         menus = Menu.objects.all()[:5]
-#         for i in menus:
-#             print(i)
-#         context = {
-#             "orders": menus
-#         }
-#         return render(request, self.template_name, context)
