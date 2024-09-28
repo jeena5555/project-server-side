@@ -15,7 +15,9 @@
                     ALL
                 </a>
                 {% for category in categories %}
-                    <a href="?category={{ category.name }}" class="category-btn border-2 border-white text-white rounded-full bg-transparent hover:bg-white hover:text-black px-4 py-2 {% if selected_category == category.name %}bg-white text-black{% endif %}">
+                    <a
+                        href="?category={{ category.name }}"
+                        class="category-btn border-2 border-white text-white rounded-full bg-transparent hover:bg-white hover:text-black px-4 py-2">
                         {{ category.name }}
                     </a>
                 {% endfor %}
