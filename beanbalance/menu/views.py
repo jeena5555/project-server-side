@@ -6,6 +6,8 @@ from django.views import View
 from menu.models import Menu, Category
 from order.models import Order
 
+import json
+
 # Create your views here.
 
 class MenuView(View):
@@ -27,5 +29,19 @@ class MenuView(View):
             "selected_category": selected_category
         }
         return render(request, self.template_name, context)
+
+class PaymentView(View):
+    template_name = "payment.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
+        # Load data from the request body
+        data = json.loads(request.body)
+
+        # Render the template with the received data
+        return render(request, self.template_name, {'cart': data})
+
 
 
