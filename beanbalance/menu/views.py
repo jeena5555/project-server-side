@@ -27,3 +27,15 @@ def update_cart(request):
         # For this example, we'll just return the received data
         return JsonResponse({'status': 'success', 'cart': data})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+# class PaymentView(View):
+#     template_name = "payment.html"
+
+#     def get(self, request):
+#         menus = Menu.objects.all()[:5]
+#         for i in menus:
+#             print(i)
+#         context = {
+#             "orders": menus
+#         }
+#         return render(request, self.template_name, context)
