@@ -1,30 +1,103 @@
 from django import forms
-from .models import Employee,User
+from .models import Employee, User
 from datetime import date
+
 class AddEmployeeForm(forms.ModelForm):
-    first_name = forms.CharField(max_length=150)
-    last_name = forms.CharField(max_length=200)
-    gender = forms.ChoiceField(choices=Employee.Gender.choices) # Using choices directly from the Gender class defined in the model
-    birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=True)
-    hire_date = forms.DateField(widget=forms.SelectDateWidget) #no idea
-    contact_number = forms.CharField(max_length=20)
-    salary = forms.DecimalField(max_digits=10, decimal_places=2)
-    account = forms.ModelChoiceField(queryset=User.objects.all(), empty_label="Select User")
+    # Define each field with widgets and attributes for styling
+    first_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'First Name',
+            'class': 'w-full p-2 mb-4 border rounded'
+        })
+    )
+
+    last_name = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Last Name',
+            'class': 'w-full p-2 mb-4 border rounded'
+        })
+    )
+    
+    gender = forms.ChoiceField(
+        choices=Employee.Gender.choices,
+        widget=forms.Select(attrs={
+            'class': 'w-full p-2 mb-4 border rounded'
+        })
+    )
+    
+    birth_date = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'w-full p-2 mb-4 border rounded'
+        }),
+        required=True
+    )
+    
+    hire_date = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'w-full p-2 mb-4 border rounded'
+        }),
+        required=True
+    )
+    
+    contact_number = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Contact Number',
+            'class': 'w-full p-2 mb-4 border rounded'
+        })
+    )
+    
+    salary = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'placeholder': 'Salary',
+            'class': 'w-full p-2 mb-4 border rounded'
+        }),
+        help_text="Enter the monthly salary of the employee in dollars."
+    )
+
+    # position = forms.ModelChoiceField(
+    #     queryset=Position.objects.all(),
+    #     empty_label="Select Position",
+    #     widget=forms.Select(attrs={
+    #         'class': 'w-full p-2 mb-4 border rounded bg-gray-200'
+    #     })
+    # )
+
     class Meta:
         model = Employee
-        fields = ("first_name",
-                  "last_name",
-                  "gender",
-                  "birth_date",
-                  "hire_date",
-                  "contact_number",
-                  "salary",
-                  "account"
-                  )
+        fields = (
+            "first_name",
+            "last_name",
+            "gender",
+            "birth_date",
+            "hire_date",
+            "contact_number",
+            "salary",
+        )
+
     def clean_hire_date(self):
-      cleaned_data = super().clean()
-      hire_date = cleaned_data.get('hire_date')
-      if hire_date > date.today():
-          msg = "Please Enter hire date correctly"
-          self.add_error("hire_date", msg)
-      return hire_date
+        hire_date = self.cleaned_data.get('hire_date')
+        if hire_date and hire_date > date.today():
+            raise forms.ValidationError("Please enter a valid hire date that is not in the future.")
+        return hire_date
+    
+    def clean_contact_number(self):
+        contact_number = self.cleaned_data.get('contact_number')
+        if not contact_number.isdigit():
+            raise forms.ValidationError("Contact number should contain only digits.")
+        if len(contact_number) < 10:
+            raise forms.ValidationError("Contact number must be at least 10 digits.")
+        return contact_number
+    
+    def clean_salary(self):
+        salary = self.cleaned_data.get('salary')
+        if salary and salary <= 0:
+            raise forms.ValidationError("Salary must be greater than zero.")
+        return salary
+
