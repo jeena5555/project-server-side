@@ -3,78 +3,89 @@
 {% load multi_price %}
 {% block title %}Payment{% endblock %}
 {% block content %}
+{% csrf_token %}
 <script src="{% static 'js/cart.js' %}"></script>
+<script src="{% static 'js/payment.js' %}"></script>
 <div class="container mx-auto w-full flex">
-    <div class="w-2/3 text-white px-6 sticky top-0 h-screen overflow-y-scroll p-8" style="background-color: #292C2D;">
-        <div class="sticky top-0 bg-[#292C2D] z-10">
-            <i class="fa-solid fa-arrow-left bg-black p-4 rounded-full"></i>
-
-            <div>
-                <h1 id="category-title" class="text-4xl font-bold text-white p-6">Payment</h1>
-            </div>
-        </div>
-
-        <div id="menu-items" class="grid grid-cols-2 gap-4 overflow-y-auto mb-6">
-            <div class="bg-white text-gray-900 rounded-lg p-6 flex flex-col justify-between">
-                <!-- Order Header -->
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold">Order #</h2>
-                </div>
-
-                <!-- Order Menu Table -->
-                <table class="w-full mb-4">
-                    {% if cart %}
-                    <tbody>
-                        {% for menu in cart %}
-                        <tr>
-                            <td class="w-1/4">{{ menu.quantity }}</td>
-                            <td class="w-1/4">{{ menu.name }}</td>
-                            <td class="w-1/4 text-right">@{{ menu.price }}</td>
-                            <td class="w-1/4 text-right">{{ menu.price|multiply:menu.quantity }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                    {% else %}
-                        <p>Your cart is empty.</p>
-                    {% endif %}
-                </table>
-
-                <hr class="border-t border-gray-300 my-4">
-
-                <!-- Order Summary Footer -->
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-600">x {{ cart|total_quantity }} menu</span>
-                    <span class="text-xl font-bold">{{ total_price }}</span>
-                </div>
-            </div>
-
-        </div>
-        </div>
-    </div>
-
     <div class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex gap-5 items-center mb-6">
+            <a href="{% url 'menu' %}" class="inline-block">
+                <i class="fa-solid fa-arrow-left text-white bg-black p-4 rounded-full"></i>
+            </a>
             <h2 class="text-3xl font-bold">Cart</h2>
-            <div class="bg-gray-300 rounded-full px-4 py-2">
-                <span class="font-semibold">P</span> Peam
-            </div>
         </div>
-
-        <div id="cart-items" class="overflow-y-auto h-[calc(100vh-250px)]">
+        <div id="cart-items" class="overflow-y-auto h-[calc(100vh-200px)]">
 
         </div>
-
         <div class="border-t pt-4 mt-4">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-xl font-semibold">Total</span>
+            <div class="flex justify-between items-center">
+                <span class="text-xl font-semibold">Total :</span>
                 <span id="total" class="text-xl font-semibold">0.00</span>
             </div>
-            <button id="payment-btn" class="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800">Payment</button>
+        </div>
+    </div>
+    <div class="w-2/3 text-white p-10 sticky top-0 h-screen overflow-y-scroll" style="background-color: #292C2D;">
+        <div class="bill flex flex-col items-center justify-center">
+            <h1 id="category-title" class="text-4xl font-bold text-white mb-6">Payment</h1>
+
+            <div class="payment-method m-2">
+                <div class="payment-method m-2">
+                    <div class="flex space-x-7 mb-5">
+                        <button onclick="setPaymentMethod('Cash')" class="border border-gray-300 px-8 py-4 rounded-lg flex flex-col items-center transition-transform transform hover:bg-gray-700 active:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 focus:bg-gray-500">
+                            <i class="fa-solid fa-money-bills"></i>
+                            <span>Cash</span>
+                        </button>
+                        <button onclick="setPaymentMethod('Card')" class="border border-gray-300 px-8 py-4 rounded-lg flex flex-col items-center transition-transform transform hover:bg-gray-700 active:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 focus:bg-gray-500">
+                            <i class="fa-regular fa-credit-card"></i>
+                            <span>Card</span>
+                        </button>
+                        <button onclick="setPaymentMethod('QR Code')" class="border border-gray-300 px-8 py-4 rounded-lg flex flex-col items-center transition-transform transform hover:bg-gray-700 active:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 focus:bg-gray-500">
+                            <i class="fa-solid fa-qrcode"></i>
+                            <span>QR Code</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="selectedPaymentMethod" value="Cash">
+                </div>
+            </div>
+
+            <div id="selectedPaymentDisplay" class="border-white p-8 mb-5 rounded-lg shadow-lg w-80 h-100 text-center">
+                <h2 class="text-white text-2xl mb-4">Receive</h2>
+                <div id="receive" class="text-white text-5xl font-bold mb-6">0.00</div>
+                <div class="grid grid-cols-3 gap-6">
+                    {% for number in "123456789" %}
+                        <button class="keypad-button bg-gray-200 text-black text-xl p-5 rounded-full" onclick="updateReceive('{{ number }}')">{{ number }}</button>
+                    {% endfor %}
+                    <div class="col-span-3 flex justify-between gap-4">
+                        <button class="keypad-button w-2/3  bg-gray-200 text-black text-xl p-5 rounded-full" onclick="updateReceive('0')">0</button>
+                        <button class="keypad-button w-1/3  bg-gray-200 text-black text-xl rounded-full" onclick="deleteLastDigit()">
+                            <i class="fa-solid fa-delete-left"></i>
+                        </button>
+                    </div>
+                </div>
+                <button id="paymentButton" class="mt-6 bg-[#C2DBE9] text-gray-800 text-xl font-bold p-3 rounded-full w-full" onclick="showBillSummary()">Payment</button>
+
+                <!-- Bill Summary Popup -->
+                <div id="billSummaryPopup" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+                    <div class="bg-white text-black p-8 rounded-lg shadow-lg w-80">
+                        <h2 class="text-2xl font-bold mb-4">Bill Summary</h2>
+                        <div class="div-receive flex justify-between">
+                            <p class="text-xl font-bold mb-4">Receive: </p>
+                            <p id="receive_cash" class="text-xl font-bold mb-4"></p>
+                        </div>
+                        <div class="div-summaryReceive flex justify-between">
+                            <p class="text-xl font-bold mb-4">Total: </p>
+                            <p id="summaryReceive" class="text-xl font-bold mb-4"></p>
+                        </div>
+                        <div class="div-change text-[#FF1717] flex justify-between">
+                            <p class="text-xl font-bold mb-4">Change: </p>
+                            <p id="change" class="text-xl font-bold mb-4"></p>
+                        </div>
+                        <button onclick="confirmOrder('{{ csrf_token }}')" class="bg-[#C2DBE9] text-gray-800 text-2xl font-bold p-2 rounded-full w-full">Confirm</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-
-
 
 {% endblock %}
