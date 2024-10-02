@@ -9,27 +9,27 @@
             <div class="mt-6 mb-6">
                 <input type="text" id="search" placeholder="Search" class="w-full bg-[#404040] text-white px-4 py-2 rounded-full">
             </div>
-
-            <!-- Inventory Header -->
-            <h2 class="text-2xl font-bold mb-4">Inventory</h2>
-
-            <!-- Add Position & Filters -->
+          <!-- Add Position & Filters -->
             <div class="flex flex-wrap gap-3 mb-3">
                 <a href="#" class="px-4 py-2 rounded-full flex items-center text-black" style="background-color:#ffffff;">
                     Add Category <span class="ml-2 text-2xl">+</span>
                 </a>
             </div>
+            <!-- Inventory Header -->
+            <h2 class="text-2xl font-bold mb-4">Inventory</h2>
 
             <!-- Inventory Table Header -->
-            <div class="flex justify-between p-2 border-b border-gray-700 text-gray-300">
+            <div class="grid grid-cols-4 p-2 border-b border-gray-700 text-gray-300 text-center">
                 <span class="font-semibold">Name</span>
                 <span class="font-semibold">Price</span>
                 <span class="font-semibold">Quantity</span>
+                <span class="font-semibold">Edit</span>
             </div>
 
             <!-- Inventory Items -->
             {% for item in inventory %}
-            <div class="flex justify-between items-center p-4 bg-gray-800 mb-2 rounded"
+            <div class="p-4 rounded-lg grid grid-cols-4 my-4 text-center"
+                style="background-color:#404040;"
                 data-id="{{ item.id }}"
                 data-name="{{ item.name }}"
                 data-price="{{ item.price }}"
@@ -38,11 +38,16 @@
                 <span>{{ item.name }}</span>
                 <span>{{ item.price }}</span>
                 <span>{{ item.quantity }}</span>
-                <button onclick="rendereditpage('{{ employee.id }}')">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12.1465 0.146447C12.3417 -0.0488155 12.6583 -0.0488155 12.8536 0.146447L15.8536 3.14645C16.0488 3.34171 16.0488 3.65829 15.8536 3.85355L5.85357 13.8536C5.80569 13.9014 5.74858 13.9391 5.68571 13.9642L0.68571 15.9642C0.500001 16.0385 0.287892 15.995 0.146461 15.8536C0.00502989 15.7121 -0.0385071 15.5 0.0357762 15.3143L2.03578 10.3143C2.06092 10.2514 2.09858 10.1943 2.14646 10.1464L12.1465 0.146447ZM11.2071 2.5L13.5 4.79289L14.7929 3.5L12.5 1.20711L11.2071 2.5ZM12.7929 5.5L10.5 3.20711L4.00001 9.70711V10H4.50001C4.77616 10 5.00001 10.2239 5.00001 10.5V11H5.50001C5.77616 11 6.00001 11.2239 6.00001 11.5V12H6.29291L12.7929 5.5ZM3.03167 10.6755L2.92614 10.781L1.39754 14.6025L5.21903 13.0739L5.32456 12.9683C5.13496 12.8973 5.00001 12.7144 5.00001 12.5V12H4.50001C4.22387 12 4.00001 11.7761 4.00001 11.5V11H3.50001C3.28561 11 3.10272 10.865 3.03167 10.6755Z" fill="white"/>
-                  </svg>                           
-                </button>
+                <div class="text-center">
+                    <button style="width:20px;" onclick="rendereditpage('{{ employee.id }}')">
+                        <svg width="16" height="16" fill="#ffffff" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1" viewBox="0 0 306.637 306.637" xml:space="preserve">
+                            <g>
+                                <path d="M12.809,238.52L0,306.637l68.118-12.809l184.277-184.277l-55.309-55.309L12.809,238.52z M60.79,279.943l-41.992,7.896    l7.896-41.992L197.086,75.455l34.096,34.096L60.79,279.943z"/>
+                                <path d="M251.329,0l-41.507,41.507l55.308,55.308l41.507-41.507L251.329,0z M231.035,41.507l20.294-20.294l34.095,34.095    L265.13,75.602L231.035,41.507z"/>
+                            </g>
+                        </svg>
+                    </button>
+                </div>
             </div>
             {% endfor %}
         </div>
