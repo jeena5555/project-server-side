@@ -30,37 +30,48 @@
 
             <div class="payment-method m-2">
                 <div class="payment-method m-2">
-                    <div class="flex space-x-7 mb-5">
-                        <button onclick="setPaymentMethod('Cash')" class="border border-gray-300 px-8 py-4 rounded-lg flex flex-col items-center transition-transform transform hover:bg-gray-700 active:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 focus:bg-gray-500">
+                    <div class="flex space-x-7">
+                        <button onclick="setPaymentMethod('Cash')" id="cashButton" class="payment-method-button border border-gray-300 px-8 py-4 rounded-lg flex flex-col items-center transition-transform transform hover:bg-gray-700 active:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50">
                             <i class="fa-solid fa-money-bills"></i>
                             <span>Cash</span>
                         </button>
-                        <button onclick="setPaymentMethod('Card')" class="border border-gray-300 px-8 py-4 rounded-lg flex flex-col items-center transition-transform transform hover:bg-gray-700 active:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 focus:bg-gray-500">
+                        <button onclick="setPaymentMethod('Card')" id="cardButton" class="payment-method-button border border-gray-300 px-8 py-4 rounded-lg flex flex-col items-center transition-transform transform hover:bg-gray-700 active:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50">
                             <i class="fa-regular fa-credit-card"></i>
                             <span>Card</span>
                         </button>
-                        <button onclick="setPaymentMethod('QR Code')" class="border border-gray-300 px-8 py-4 rounded-lg flex flex-col items-center transition-transform transform hover:bg-gray-700 active:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 focus:bg-gray-500">
+                        <button onclick="setPaymentMethod('QR Code')" id="qrCodeButton" class="payment-method-button border border-gray-300 px-8 py-4 rounded-lg flex flex-col items-center transition-transform transform hover:bg-gray-700 active:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50">
                             <i class="fa-solid fa-qrcode"></i>
                             <span>QR Code</span>
                         </button>
                     </div>
-                    <input type="hidden" id="selectedPaymentMethod" value="Cash">
                 </div>
             </div>
 
-            <div id="selectedPaymentDisplay" class="border-white p-8 mb-5 rounded-lg shadow-lg w-80 h-100 text-center">
-                <h2 class="text-white text-2xl mb-4">Receive</h2>
-                <div id="receive" class="text-white text-5xl font-bold mb-6">0.00</div>
-                <div class="grid grid-cols-3 gap-6">
-                    {% for number in "123456789" %}
-                        <button class="keypad-button bg-gray-200 text-black text-xl p-5 rounded-full" onclick="updateReceive('{{ number }}')">{{ number }}</button>
-                    {% endfor %}
-                    <div class="col-span-3 flex justify-between gap-4">
-                        <button class="keypad-button w-2/3  bg-gray-200 text-black text-xl p-5 rounded-full" onclick="updateReceive('0')">0</button>
-                        <button class="keypad-button w-1/3  bg-gray-200 text-black text-xl rounded-full" onclick="deleteLastDigit()">
-                            <i class="fa-solid fa-delete-left"></i>
-                        </button>
+            <div id="selectedPaymentDisplay" class="border-white rounded-lg shadow-lg w-80 h-100 text-center">
+                <div id="cashPayment">
+                    <h2 class="text-white text-2xl mb-4">Receive</h2>
+                    <div id="receive" class="text-white text-5xl font-bold mb-6">0.00</div>
+                    <div class="grid grid-cols-3 gap-6">
+                        {% for number in "123456789" %}
+                            <button class="keypad-button bg-gray-200 text-black text-xl p-5 rounded-full" onclick="updateReceive('{{ number }}')">{{ number }}</button>
+                        {% endfor %}
+                        <div class="col-span-3 flex justify-between gap-4">
+                            <button class="keypad-button w-2/3  bg-gray-200 text-black text-xl p-5 rounded-full" onclick="updateReceive('0')">0</button>
+                            <button class="keypad-button w-1/3  bg-gray-200 text-black text-xl rounded-full" onclick="deleteLastDigit()">
+                                <i class="fa-solid fa-delete-left"></i>
+                            </button>
+                        </div>
                     </div>
+                </div>
+
+                <div id="cardPayment" class="hidden">
+                    <h2 class="text-white text-2xl mb-4">Please swipe your card</h2>
+                    <i class="fa-regular fa-credit-card text-6xl mt-4"></i>
+                </div>
+
+                <div id="qrCodePayment" class="hidden">
+                    <h2 class="text-white text-2xl mb-4">Scan QR Code to pay</h2>
+                    <i class="fa-solid fa-qrcode text-6xl mt-4"></i>
                 </div>
                 <button id="paymentButton" class="mt-6 bg-[#C2DBE9] text-gray-800 text-xl font-bold p-3 rounded-full w-full" onclick="showBillSummary()">Payment</button>
 
@@ -68,20 +79,24 @@
                 <div id="billSummaryPopup" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
                     <div class="bg-white text-black p-8 rounded-lg shadow-lg w-80">
                         <h2 class="text-2xl font-bold mb-4">Bill Summary</h2>
-                        <div class="div-receive flex justify-between">
+                        <div id="div-receive" class="flex justify-between">
                             <p class="text-xl font-bold mb-4">Receive: </p>
                             <p id="receive_cash" class="text-xl font-bold mb-4"></p>
                         </div>
-                        <div class="div-summaryReceive flex justify-between">
+                        <div id="div-summaryReceive" class="flex justify-between">
                             <p class="text-xl font-bold mb-4">Total: </p>
                             <p id="summaryReceive" class="text-xl font-bold mb-4"></p>
                         </div>
-                        <div class="div-change text-[#FF1717] flex justify-between">
+                        <div id="div-change" class="text-[#FF1717] flex justify-between">
                             <p class="text-xl font-bold mb-4">Change: </p>
                             <p id="change" class="text-xl font-bold mb-4"></p>
                         </div>
-                        <button onclick="confirmOrder('{{ csrf_token }}')" class="bg-[#C2DBE9] text-gray-800 text-2xl font-bold p-2 rounded-full w-full">Confirm</button>
-                    </div>
+                        <div id="div-message" class="text-gray-600 flex justify-center">
+                            <p id="message" class="text-xl font-bold mb-4"></p>
+                        </div>
+                        <div class="flex justify-between gap-7">
+                            <button onclick="confirmOrder('{{ csrf_token }}')" class="bg-[#C2DBE9] text-gray-800 text-2xl font-bold p-2 rounded-full w-full">Confirm</button>
+                            <button onclick="closeBillSummary('{{ csrf_token }}')" class="border-2 text-gray-400 text-2xl font-bold p-2 rounded-full w-full">Cancel</button>
                 </div>
             </div>
         </div>

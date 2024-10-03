@@ -1,39 +1,49 @@
-function confirmOrder(csrf_token) {
-  const cartData = localStorage.getItem('cart');
-  const total = parseFloat(document.getElementById('total').innerText);
+let selectedPaymentMethod = 'Cash';
 
-  const paymentMethod = document.getElementById('selectedPaymentMethod').value || selectedPaymentMethod;
+function setPaymentMethod(method) {
+    selectedPaymentMethod = method;
+    updatePaymentDisplay();
+    updateButtonStyles();
+}
 
+function updatePaymentDisplay() {
+    const cashPayment = document.getElementById('cashPayment');
+    const cardPayment = document.getElementById('cardPayment');
+    const qrCodePayment = document.getElementById('qrCodePayment');
 
-  if (cartData) {
-    const cart = JSON.parse(cartData);
-    const data = {
-      cart: cart,
-      total: total,
-      payment_method: paymentMethod
-    };
+    cashPayment.classList.add('hidden');
+    cardPayment.classList.add('hidden');
+    qrCodePayment.classList.add('hidden');
 
-    fetch('/menu/payment/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrf_token
-      },
-      body: JSON.stringify(data)
-    })
-    .then((cart) => {
-      console.log("Item deleted successfully");
-      localStorage.removeItem('cart');
-      alert("Thank you for your order!");
-      window.location.href = '/menu/';
-    })
-    .catch((error) => console.error("Error:", error));
+    switch (selectedPaymentMethod) {
+        case 'Cash':
+            cashPayment.classList.remove('hidden');
+            break;
+        case 'Card':
+            cardPayment.classList.remove('hidden');
+            break;
+        case 'QR Code':
+            qrCodePayment.classList.remove('hidden');
+            break;
+    }
+}
+
+function updateButtonStyles() {
+  const buttons = document.querySelectorAll('.payment-method-button');
+  buttons.forEach(button => {
+      button.classList.remove('bg-gray-500');
+  });
+
+  const selectedButton = document.getElementById(`${selectedPaymentMethod.toLowerCase().replace(' ', '')}Button`);
+  if (selectedButton) {
+      selectedButton.classList.add('bg-gray-500');
   }
 }
-function setPaymentMethod(method) {
-  selectedPaymentMethod = method;  // Set the selected payment method
-  document.getElementById('selectedPaymentMethod').value = method;  // Update hidden input
-}
+
+document.addEventListener('DOMContentLoaded', function() {
+  updatePaymentDisplay();
+  updateButtonStyles();
+});
 
 function updateReceive(digit) {
     let receive = document.getElementById('receive').innerText;
@@ -68,21 +78,55 @@ function deleteLastDigit() {
     document.getElementById('receive').innerText = whole + '.' + decimal;
 }
 
+
 function showBillSummary() {
-    const total = parseFloat(document.getElementById('total').innerText);
-    const receive = parseFloat(document.getElementById('receive').innerText);
+    const summaryReceiveElement = document.getElementById('summaryReceive');
+    const changeElement = document.getElementById('change');
+    const receiveCashElement = document.getElementById('receive_cash');
+    const messageElement = document.getElementById('message');
 
-    if (receive < total) {
-        showCustomAlert('The received amount is less than the total. Please check again.');
-        return;
+    const changeDiv = document.getElementById('div-change');
+    const receiveDiv = document.getElementById('div-receive');
+    const messageDiv = document.getElementById('div-message');
+
+    changeDiv.classList.add('hidden');
+    receiveDiv.classList.add('hidden');
+    messageDiv.classList.add('hidden');
+
+    console.log(selectedPaymentMethod);
+
+    if (selectedPaymentMethod === 'Cash') {
+        const total = parseFloat(document.getElementById('total').innerText);
+        const receive = parseFloat(document.getElementById('receive').innerText);
+
+        if (receive < total) {
+            showCustomAlert('The received amount is less than the total. Please check again.');
+            return;
+        }
+
+        const change = receive - total;
+        summaryReceiveElement.innerText = '฿' + total.toFixed(2);
+        receiveCashElement.innerText = '฿' + receive.toFixed(2);
+        changeElement.innerText = '฿' + change.toFixed(2);
+
+        changeDiv.classList.remove('hidden');
+        receiveDiv.classList.remove('hidden');
+
+        document.getElementById('billSummaryPopup').classList.remove('hidden');
+        document.getElementById('billSummaryPopup').classList.add('flex');
+    } else {
+        summaryReceiveElement.innerText = '฿' + document.getElementById('total').innerText;
+        messageDiv.classList.remove('hidden');
+        messageElement.innerText = 'Please wait while we process your order...';
+        document.getElementById('billSummaryPopup').classList.remove('hidden');
+        document.getElementById('billSummaryPopup').classList.add('flex');
     }
+}
 
-    const change = receive - total;
-    document.getElementById('summaryReceive').innerText = '฿' + total.toFixed(2);
-    document.getElementById('receive_cash').innerText = '฿' + receive.toFixed(2);
-    document.getElementById('change').innerText = '฿' + change.toFixed(2);
-    document.getElementById('billSummaryPopup').classList.remove('hidden');
-    document.getElementById('billSummaryPopup').classList.add('flex');
+function closeBillSummary() {
+  const billSummaryPopup = document.getElementById('billSummaryPopup');
+  billSummaryPopup.classList.add('hidden');
+  billSummaryPopup.classList.remove('flex');
 }
 
 function showCustomAlert(message) {
@@ -124,3 +168,36 @@ function closeBillSummary() {
     document.getElementById('billSummaryPopup').classList.remove('flex');
 }
 
+
+function confirmOrder(csrf_token) {
+  const cartData = localStorage.getItem('cart');
+  const total = parseFloat(document.getElementById('total').innerText);
+
+  const paymentMethod = selectedPaymentMethod;
+
+
+  if (cartData) {
+    const cart = JSON.parse(cartData);
+    const data = {
+      cart: cart,
+      total: total,
+      payment_method: paymentMethod
+    };
+
+    fetch('/menu/payment/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrf_token
+      },
+      body: JSON.stringify(data)
+    })
+    .then((cart) => {
+      console.log("Item deleted successfully");
+      localStorage.removeItem('cart');
+      alert("Thank you for your order!");
+      window.location.href = '/menu/';
+    })
+    .catch((error) => console.error("Error:", error));
+  }
+}
