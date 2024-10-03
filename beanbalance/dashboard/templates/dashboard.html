@@ -1,0 +1,47 @@
+{% block content %}
+<div class="flex">
+  <div class="bg-gray-800 w-64 p-4">
+      <h2 class="text-lg font-bold">Sidebar</h2>
+      <!-- Add sidebar links here -->
+  </div>
+  <div class="flex-1 p-8">
+      <div class="flex justify-between items-center mb-8">
+          <div class="relative">
+              <input
+                  type="text"
+                  placeholder="Search"
+                  class="bg-gray-800 text-white pl-10 pr-4 py-2 rounded-full"
+              />
+              <span class="absolute left-3 top-2 text-gray-400">🔍</span>
+          </div>
+          <div class="flex items-center space-x-4">
+              <div class="flex items-center bg-gray-800 rounded-full px-4 py-2">
+                  <span class="mr-2">📅</span>
+                  <span>22/09/2003</span>
+              </div>
+              <div class="flex items-center bg-purple-200 text-purple-800 rounded-full px-4 py-2">
+                  <span class="mr-2">Peak Sales Hours:</span>
+                  <span class="font-bold">10:00</span>
+              </div>
+              <div class="bg-blue-500 rounded-full p-2">
+                  <span class="font-bold text-xl">P</span>
+              </div>
+              <span>Peam</span>
+          </div>
+      </div>
+      <!-- Include your components here -->
+      <h3 class="text-xl mb-4">Sales Stats</h3>
+      <!-- You can render your sales stats here -->
+      <div class="grid grid-cols-3 gap-8 mt-8">
+          <div class="col-span-2">
+              <h3 class="text-xl mb-4">Sales Trends</h3>
+              <!-- Your Sales Trends component goes here -->
+          </div>
+          <div>
+              <h3 class="text-xl mb-4">Top Selling Menu</h3>
+              <!-- Your Top Selling Menu component goes here -->
+          </div>
+      </div>
+  </div>
+</div>
+{% endblock %}
