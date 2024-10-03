@@ -9,6 +9,12 @@ function renderEditInventory(itemId) {
     const price = itemCard.dataset.price;
     const quantity = itemCard.dataset.quantity;
 
+    // Hide the add form if it is visible
+    const addFormContainer = document.getElementById('add-category-form');
+    if (addFormContainer) {
+      addFormContainer.classList.add('hidden');
+    }
+
     // Show and populate the edit form
     const editFormContainer = document.getElementById('edit-category-form'); // Ensure this matches your form container
     if (editFormContainer) {
@@ -26,6 +32,23 @@ function renderEditInventory(itemId) {
     console.error('Inventory item not found for ID:', itemId);
   }
 }
+
+// Function to render the add form
+function renderAddInventory() {
+  // Hide the edit form if it is visible
+  const editFormContainer = document.getElementById('edit-category-form');
+  if (editFormContainer) {
+    editFormContainer.classList.add('hidden');
+  }
+
+  // Show the add form
+  const addFormContainer = document.getElementById('add-category-form'); // Ensure this matches your form container
+  if (addFormContainer) {
+    addFormContainer.classList.remove('hidden'); // Make sure the form is visible
+  }
+}
+
+
 // Function to handle updating the inventory
 function updateInventory() {
   const itemId = document.getElementById('edit-form').getAttribute('data-item-id');

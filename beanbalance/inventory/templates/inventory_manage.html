@@ -1,7 +1,10 @@
 {% extends 'layout.html' %}
 {% load static %}
 {% block content %}
+<script src="{% static '../static/edit_inventory.js' %}"></script>
 <div class="container mx-auto w-full flex">
+
+
     <!-- Left Panel: Inventory List -->
     <div class="w-2/3 text-white px-6 sticky top-0 h-screen overflow-y-scroll" style="background-color: #292C2D;">
         <div class="sticky top-0 bg-[#292C2D] z-10">
@@ -11,7 +14,7 @@
             </div>
           <!-- Add Position & Filters -->
             <div class="flex flex-wrap gap-3 mb-3">
-                <a href="#" class="px-4 py-2 rounded-full flex items-center text-black" style="background-color:#ffffff;">
+                <a onclick="renderAddInventory()" class="px-4 py-2 rounded-full flex items-center text-black" style="background-color:#ffffff;">
                     Add Category <span class="ml-2 text-2xl">+</span>
                 </a>
             </div>
@@ -39,7 +42,7 @@
                 <span>{{ item.price }}</span>
                 <span>{{ item.quantity }}</span>
                 <div class="text-center">
-                    <button style="width:20px;" onclick="rendereditpage('{{ employee.id }}')">
+                    <button style="width:20px;" onclick="renderEditInventory('{{ item.id }}')">
                         <svg width="16" height="16" fill="#ffffff" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1" viewBox="0 0 306.637 306.637" xml:space="preserve">
                             <g>
                                 <path d="M12.809,238.52L0,306.637l68.118-12.809l184.277-184.277l-55.309-55.309L12.809,238.52z M60.79,279.943l-41.992,7.896    l7.896-41.992L197.086,75.455l34.096,34.096L60.79,279.943z"/>
@@ -53,8 +56,9 @@
         </div>
     </div>
 
+
     <!-- Right Section (Add Category Form) -->
-    <div class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll">
+    <div id="add-category-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll hidden">
         <h2 class="text-2xl font-semibold mb-6">Add Category</h2>
         <form method="post" class="space-y-4">
             {% csrf_token %}
@@ -62,5 +66,31 @@
             <button type="submit" class="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition duration-300">Add Category</button>
         </form>
     </div>
+
+
+    <!-- Right Section (Edit Form) -->
+    <div id="edit-category-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll hidden">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold">Edit Inventory</h2>
+        </div>
+
+        <form id="edit-form" method="post" onsubmit="event.preventDefault(); updateInventory();">
+            {% csrf_token %}
+            <label class="block mb-2">Name</label>
+            <input type="text" id="category-name" name="name" class="w-full p-2 mb-4 border rounded" />
+
+            <label class="block mb-2">Price</label>
+            <input type="text" id="category-price" name="price" class="w-full p-2 mb-4 border rounded" />
+
+            <label class="block mb-2">Quantity</label>
+            <input type="number" id="category-quantity" name="quantity" class="w-full p-2 mb-4 border rounded" />
+
+            <div class="flex justify-center border-t pt-4 mt-4">
+                <button type="submit" class="w-24 bg-black text-white py-3 rounded-full hover:bg-gray-800 mr-5">Save</button>
+                <button type="button" onclick="deleteInventory();" class="w-24 bg-red-600 text-white py-3 rounded-full hover:bg-red-800">Delete</button>
+            </div>
+        </form>
+    </div>
+
 </div>
 {% endblock %}
