@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'authen',
     'menu',
     'order',
-    'inventory'
+    'inventory',
+    'dashboard',
 ]
 
 MIDDLEWARE = [
