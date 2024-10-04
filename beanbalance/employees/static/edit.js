@@ -13,15 +13,14 @@ function rendereditpage(employeeId) {
     const position = employeeCard.dataset.position;
 
     // Hide the add form if visible
-    const addFormContainer = document.getElementById('add-category-form');
-    if (addFormContainer) {
-      addFormContainer.classList.add('hidden');
-    }
+    const addFormContainer = document.getElementById('add-employee-form');
+    addFormContainer.classList.add('hidden');
+    
 
     // Show and populate the edit form
     const editFormContainer = document.getElementById('edit-form-container');
-    if (editFormContainer) {
-      editFormContainer.classList.remove('hidden'); // Show the form
+    
+    editFormContainer.classList.remove('hidden'); // Show the form
 
       // Populate form fields with employee data
       document.getElementById('first-name').value = firstName || '';
@@ -30,23 +29,19 @@ function rendereditpage(employeeId) {
       document.getElementById('birth-date').value = birthDate || '';
       document.getElementById('position').value = position || '';
     }
-  } else {
-    console.error('Employee card not found for ID:', employeeId);
-  }
 }
 
 // Function to render the add employee form
 function renderaddemployee() {
   // Hide the edit form if it is visible
   const editFormContainer = document.getElementById('edit-form-container');
-  if (editFormContainer) {
-    editFormContainer.classList.add('hidden'); // Hide the edit form
-  }
+  
+  editFormContainer.classList.add('hidden'); // Hide the edit form
+  
 
   // Show the add employee form
   const addFormContainer = document.getElementById('add-employee-form');
-  if (addFormContainer) {
-    addFormContainer.classList.remove('hidden'); // Make sure the add employee form is visible
-  }
+  
+  addFormContainer.classList.remove('hidden'); // Make sure the add employee form is visible
 }
 

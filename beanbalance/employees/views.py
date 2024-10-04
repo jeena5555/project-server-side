@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.views import View
 from .models import Employee
+from django.contrib.auth.models import Group
 from employees.forms import AddEmployeeForm
 import json
 from django.db import transaction
@@ -11,10 +12,14 @@ class EmployeeView(View):
     template_name = 'employee_manage.html'
 
     def get(self, request):
-        # Display the employee list
         employees = Employee.objects.all()
+        employee_positions = []
+        for employee in employees:
+            position = Group.user_set.through.objects.get(user_id=employee.account.id)
+            employee_positions.append({"employee": employee, "position": position})
+
         form = AddEmployeeForm()
-        return render(request, self.template_name, {"employees": employees, "form": form})
+        return render(request, self.template_name, {"employee_positions": employee_positions, "form": form})
 
     def post(self, request):
         # Add a new employee
@@ -22,7 +27,7 @@ class EmployeeView(View):
         if form.is_valid():
             with transaction.atomic():
                 form.save()
-            return redirect('employee_manage')  # Redirect to the employee list after adding a new item
+            return redirect('employee')  # Redirect to the employee list after adding a new item
         # If form is not valid, re-render the page with errors
         employees = Employee.objects.all()
         return render(request, self.template_name, {"employees": employees, "form": form})
@@ -37,7 +42,7 @@ class EmployeeUpdateView(View):
             employee.last_name = body.get('last_name', employee.last_name)
             employee.gender = body.get('gender', employee.gender)
             employee.birth_date = body.get('birth_date', employee.birth_date)
-            employee.position = body.get('position', employee.position)
+            employee.account.groups = body.get('position', employee.account.groups)
             employee.save()
             return JsonResponse({'message': 'Employee updated successfully'})
         except Exception as e:

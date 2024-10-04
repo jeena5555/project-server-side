@@ -1,5 +1,6 @@
 from django import forms
-from .models import Employee, User
+from .models import Employee
+from django.contrib.auth.models import User, Group
 from datetime import date
 
 class AddEmployeeForm(forms.ModelForm):
@@ -60,15 +61,28 @@ class AddEmployeeForm(forms.ModelForm):
         }),
         help_text="Enter the monthly salary of the employee in dollars."
     )
+    
+    position = forms.ModelChoiceField(
+        queryset=Group.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'w-full p-2 mb-4 border rounded'
+        })
+    )
 
-    # position = forms.ModelChoiceField(
-    #     queryset=Position.objects.all(),
-    #     empty_label="Select Position",
-    #     widget=forms.Select(attrs={
-    #         'class': 'w-full p-2 mb-4 border rounded bg-gray-200'
-    #     })
-    # )
-
+    username = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Username',
+            'class': 'w-full p-2 mb-4 border rounded'
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Password',
+            'class': 'w-full p-2 mb-4 border rounded'
+        })
+    )
+    
     class Meta:
         model = Employee
         fields = (
@@ -80,7 +94,29 @@ class AddEmployeeForm(forms.ModelForm):
             "contact_number",
             "salary",
         )
+        
+    def save(self, commit=True):
+        # Create the User account first
+        username = self.cleaned_data['username']
+        password = self.cleaned_data['password']
+        
+        # Create the User instance
+        user = User.objects.create_user(username=username, password=password)
 
+        # Create the Employee instance, associating it with the created User
+        employee = super().save(commit=False)
+        employee.account = user
+
+        if commit:
+            employee.save()
+            # Save positions to the related User instance
+            position = self.cleaned_data['position']
+            user.groups.add(position)
+        return employee
+    
+    user = User.objects.get(id=1)
+    user.groups.name
+    
     def clean_hire_date(self):
         hire_date = self.cleaned_data.get('hire_date')
         if hire_date and hire_date > date.today():
@@ -100,4 +136,5 @@ class AddEmployeeForm(forms.ModelForm):
         if salary and salary <= 0:
             raise forms.ValidationError("Salary must be greater than zero.")
         return salary
+    
 

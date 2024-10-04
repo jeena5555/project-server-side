@@ -76,3 +76,32 @@ function updateInventory() {
     })
     .catch((error) => console.error('Error:', error));
 }
+
+// Function to delete an inventory item
+function deleteInventory() {
+  // Get the item ID from the edit form
+  const itemId = document.getElementById('edit-form').getAttribute('data-item-id');
+  
+  // Confirm before deleting the item
+  if (!confirm("Are you sure you want to delete this inventory item?")) {
+      return; // If the user cancels, stop the function
+  }
+
+  // Send the DELETE request
+  fetch(`/inventory/delete/${itemId}/`, {
+      method: 'DELETE',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+      },
+  })
+  .then((response) => {
+      if (response.ok) {
+          console.log('Inventory item deleted successfully');
+          window.location.reload(); // Reload the page to see the updated inventory
+      } else {
+          console.error('Failed to delete inventory item:', response.statusText);
+      }
+  })
+  .catch((error) => console.error('Error:', error));
+}
