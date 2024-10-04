@@ -1,21 +1,28 @@
+# views.py
+
 from django.shortcuts import render
 from django.views import View
+from django.utils import timezone
 from order.models import Order, OrderMenu
 from order.forms import DateFilterForm
-
-# Create your views here.
 
 class OrderHistoryView(View):
     template_name = "order_history.html"
 
     def get(self, request):
-        form = DateFilterForm(request.GET)
+        today = timezone.now().date()
+
+        if 'order_date' in request.GET:
+            form = DateFilterForm(request.GET)
+        else:
+            form = DateFilterForm(initial={'order_date': today})
+
         orders = Order.objects.all()
 
-        if form.is_valid() and form.cleaned_data['order_date']:
+        if form.is_valid():
             selected_date = form.cleaned_data.get('order_date')
-            # Filter orders by the selected date (assuming you have a 'created_at' or similar date field)
-            orders = orders.filter(order_date=selected_date)
+            if selected_date:
+                orders = orders.filter(order_date=selected_date)
 
         orders_with_menus = []
         for order in orders:

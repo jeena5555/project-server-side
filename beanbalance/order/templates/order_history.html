@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'navbar_cashire.html' %}
 {% load static %}
 {% load multi_price %}
 {% block title %}Payment{% endblock %}
@@ -6,12 +6,8 @@
     <div class="bg-[#292C2D] h-screen container mx-auto px-8 py-8 overflow-hidden">
         <div class="header sticky top-0 bg-[#292C2D] z-10 mb-6">
             <h1 class="text-white text-4xl font-bold mb-6">Order</h1>
-            <form method="get" class="flex gap-6">
+            <form method="get" class="flex gap-6" id="dateForm">
                 {{ form.order_date|add_class:"border-2 text-gray-700 rounded-lg py-2 px-4" }}
-
-                <button type="submit" class="bg-[#C2DBE9] text-black font-semibold py-2 px-6 rounded-lg hover:bg-blue-600 transition duration-300 ease-in-out shadow-md">
-                        Select
-                </button>
             </form>
         </div>
         <main class="overflow-y-auto h-[calc(100vh-120px)]"> <!-- Adjusted the height -->
@@ -53,4 +49,14 @@
             </div>
         </main>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderDateInput = document.querySelector('input[name="order_date"]'); // Adjust the selector if needed
+
+            orderDateInput.addEventListener('change', function() {
+                document.getElementById('dateForm').submit();
+            });
+        });
+    </script>
 {% endblock %}
+

@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'navbar_cashire.html' %}
 {% load static %}
 {% block title %}Bean Balance Menu{% endblock %}
 {% block content %}
@@ -37,7 +37,7 @@
                     </div>
                     <p class="text-sm text-gray-500 mb-4">{{ menu.description }}</p>
                     <div class="flex">
-                        <button class="add-to-cart bg-black hover:bg-gray-600 px-4 py-2 rounded-full" data-name="{{ menu.name }}" data-price="{{ menu.price }}">Add to cart</button>
+                        <button class="add-to-cart bg-black hover:bg-gray-600 px-4 py-2 rounded-full" data-id="{{ menu.id }}" data-name="{{ menu.name }}" data-price="{{ menu.price }}">Add to cart</button>
                     </div>
                 </div>
             {% endfor %}
