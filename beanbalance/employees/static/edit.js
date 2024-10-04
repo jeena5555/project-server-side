@@ -1,8 +1,8 @@
+// Function to render the edit form and populate fields
 function rendereditpage(employeeId) {
-  // Assuming employeeId is a string, if not, parse it as needed
   // Find the employee card by using the ID or some other approach
   const employeeCard = document.querySelector(`[data-id="${employeeId}"]`);
-  console.log(employeeCard)
+  console.log(employeeCard);
 
   if (employeeCard) {
     // Extract employee data from data attributes
@@ -12,17 +12,36 @@ function rendereditpage(employeeId) {
     const birthDate = employeeCard.dataset.birthDate;
     const position = employeeCard.dataset.position;
 
+    // Hide the add form if visible
+    const addFormContainer = document.getElementById('add-employee-form');
+    addFormContainer.classList.add('hidden');
+    
+
     // Show and populate the edit form
     const editFormContainer = document.getElementById('edit-form-container');
+    
     editFormContainer.classList.remove('hidden'); // Show the form
 
-    // Populate form fields with employee data
-    document.getElementById('first-name').value = firstName || '';
-    document.getElementById('last-name').value = lastName || '';
-    document.getElementById('gender').value = gender || 'Male';
-    document.getElementById('birth-date').value = birthDate || '';
-    document.getElementById('position').value = position || '';
-  } else {
-    console.error('Employee card not found for ID:', employeeId);
-  }
+      // Populate form fields with employee data
+      document.getElementById('first-name').value = firstName || '';
+      document.getElementById('last-name').value = lastName || '';
+      document.getElementById('gender').value = gender || 'Male';
+      document.getElementById('birth-date').value = birthDate || '';
+      document.getElementById('position').value = position || '';
+    }
 }
+
+// Function to render the add employee form
+function renderaddemployee() {
+  // Hide the edit form if it is visible
+  const editFormContainer = document.getElementById('edit-form-container');
+  
+  editFormContainer.classList.add('hidden'); // Hide the edit form
+  
+
+  // Show the add employee form
+  const addFormContainer = document.getElementById('add-employee-form');
+  
+  addFormContainer.classList.remove('hidden'); // Make sure the add employee form is visible
+}
+
