@@ -1,9 +1,8 @@
 from django.urls import path
-from menu.views import MenuView, PaymentView
+from dashboard.views import DashboardView
 
 urlpatterns = [
-    path('', MenuView.as_view(), name="menu"),
-    path('payment/', PaymentView.as_view(), name="payment"),
+    path('', DashboardView.as_view(), name="dashboard"),
     # path('logout', LogoutView.as_view(), name="logout"),
     # path('test', TestView.as_view(), name="test")
 ]
