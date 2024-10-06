@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 from django.db.models import Sum
 from django.utils.timezone import now
 from datetime import date
+from django.db.models.functions import TruncHour
+
 
 
 class DashboardView(View):
@@ -20,19 +22,18 @@ class DashboardView(View):
 
         if form.is_valid():
             selected_date = form.cleaned_data.get('date')
-            if selected_date:
-                print(selected_date)
-            else:
-                print("NONONO")
 
+            peek_time = self.peek_time(selected_date)
+            top_selling_items = self.get_top_selling_items(selected_date)
             total_amount = self.total_sales_amount(selected_date)
             order_sales = self.order_sales(selected_date)
             average_order_value = self.average_order_value(selected_date)
             graph, labels = self.graph(selected_date)
-            top_selling_items = self.get_top_selling_items(selected_date)
+
 
         context = {
             'form': form,
+            'peek_time': peek_time,
             'top_selling': top_selling_items,
             'total_amount': total_amount,
             'order_sales': order_sales,
@@ -41,6 +42,25 @@ class DashboardView(View):
             'graph_labels': labels,
         }
         return render(request, self.template_name, context)
+
+    def peek_time(self, date=None):
+        if date is None:
+            date = now().date()
+
+        orders_by_time = (
+        Order.objects
+        .filter(order_date=date)
+        .annotate(hour=TruncHour('order_time'))  # Group by hour
+        .values('hour')  # Select the hour
+        .annotate(total_sales=Sum('amount'))  # Calculate total sales for each hour
+        .order_by('-total_sales')  # Order by total sales in descending order
+        )
+
+        if orders_by_time.exists():
+            peek_time = orders_by_time.first()['hour']  # Get the hour with the highest sales
+            return peek_time
+        else:
+            return None
 
     def total_sales_amount(self, date=None):
         # If no date is provided, use today's date
@@ -99,7 +119,6 @@ class DashboardView(View):
                 order_time__gte=start_time.time(),
                 order_time__lt=end_time.time()
             ).aggregate(Sum('amount'))['amount__sum'] or 0
-            print(total_amount)
 
             graph_data.append(float(total_amount))
 
@@ -110,30 +129,12 @@ class DashboardAllView(View):
     template_name = 'dashboard_all.html'
 
     def get(self, request):
-        trends_form = SelectSalesTrendsForm()
-
-        total_amount = self.total_sales_amount()
-        order_sales = self.order_sales()
-        average_order_value = self.average_order_value()
-        top_selling_items = self.get_top_selling_items()
-
-        context = {
-            'trends_form': trends_form,
-            'top_selling': top_selling_items,
-            'total_amount': total_amount,
-            'order_sales': order_sales,
-            'average_order_value': average_order_value
-        }
-        return render(request, self.template_name, context)
-
-    def post(self, request):
-        trends_form = SelectSalesTrendsForm(request.POST)
-
-        labels = []
+        form = SelectSalesTrendsForm(request.GET or {'select': 'week'})
         graph_data = []
+        labels = []
 
-        if trends_form.is_valid():
-            selected_value = trends_form.cleaned_data['select']
+        if form.is_valid():
+            selected_value = form.cleaned_data['select']
             current_time = now().date()
 
             graph_data, labels = self.aggregate_data(selected_value, current_time)
@@ -141,63 +142,52 @@ class DashboardAllView(View):
             labels_json = json.dumps(labels)
             graph_data_json = json.dumps(graph_data)
 
+            peek_time = self.peek_time()
             top_selling_items = self.get_top_selling_items()
+            total_amount = self.total_sales_amount()
+            order_sales = self.order_sales()
+            average_order_value = self.average_order_value()
 
             return render(request, self.template_name, {
-                "trends_form": trends_form,
+                "form": form,
                 "labels": labels_json,
                 "graph_data": graph_data_json,
-                'top_selling': top_selling_items,
-                'total_amount': self.total_sales_amount(),
-                'order_sales': self.order_sales(),
-                'average_order_value': self.average_order_value(),
-            })
-
-        elif generate_form.is_valid():
-            selected_date = generate_form.cleaned_data['date']
-
-            # Fetch orders for the selected date
-            total_amount = self.total_sales_amount(selected_date)
-            order_sales = self.order_sales(selected_date)
-            average_order_value = self.average_order_value(selected_date)
-            top_selling_items = self.get_top_selling_items(selected_date)
-
-            return render(request, self.template_name, {
-                "trends_form": SelectSalesTrendsForm(),  # Reset trends form
-                "generate_form": generate_form,
+                'peek_time': peek_time,
                 'top_selling': top_selling_items,
                 'total_amount': total_amount,
                 'order_sales': order_sales,
                 'average_order_value': average_order_value,
             })
 
-    def total_sales_amount(self, date=None):
-        # If no date is provided, use today's date
-        if date is None:
-            date = now().date()
-        total_amount = Order.objects.filter(order_date=date).aggregate(Sum('amount'))['amount__sum'] or 0
+    def peek_time(self):
+        orders_by_time = (
+        Order.objects
+        .annotate(hour=TruncHour('order_time'))
+        .values('hour')
+        .annotate(total_sales=Sum('amount'))
+        .order_by('-total_sales')
+        )
+
+        peek_time = orders_by_time.first()['hour']
+        return peek_time
+
+    def total_sales_amount(self):
+        total_amount = Order.objects.aggregate(Sum('amount'))['amount__sum'] or 0
         return total_amount
 
-    def order_sales(self, date=None):
-        if date is None:
-            date = now().date()
-        order_sales = Order.objects.filter(order_date=date).count()
+    def order_sales(self):
+        order_sales = Order.objects.count()
         return order_sales
 
-    def average_order_value(self, date=None):
-        if date is None:
-            date = now().date()
-        total_amount = Order.objects.filter(order_date=date).aggregate(Sum('amount'))['amount__sum'] or 0
-        order_count = Order.objects.filter(order_date=date).count() or 1  # Avoid division by zero
+    def average_order_value(self):
+        total_amount = Order.objects.aggregate(Sum('amount'))['amount__sum'] or 0
+        order_count = Order.objects.count() or 1  # Avoid division by zero
         average_order_value = total_amount / order_count
         return round(average_order_value,2)
 
-    def get_top_selling_items(self, date=None):
-        if date is None:
-            date = now().date()
+    def get_top_selling_items(self):
         top_selling_menu = (
             OrderMenu.objects
-            .filter(order__order_date=date)
             .values('menu')
             .annotate(total_quantity=Sum('quantity'))
             .order_by('-total_quantity')[:10]

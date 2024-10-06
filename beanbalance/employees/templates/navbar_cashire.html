@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="styles.css">
   <title>{% block title %}employee{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="{% static 'js/nav.js' %}"></script>
 </head>
 <body class="bg-gray-100">
   <!-- Sidebar -->
@@ -24,18 +25,34 @@
 
     <!-- Navigation Links -->
     <nav class="flex flex-col space-y-4 font-semibold">
-      <a href="{% url 'menu' %}" class="flex items-center p-4 hover:bg-[#404040] rounded-lg">
-        <i class="fa-solid fa-bars mr-2"></i>
-        <span>Menu</span>
-      </a>
-      <a href="{% url 'order_history' %}" class="flex items-center p-4 hover:bg-[#404040] rounded-lg">
-        <i class="fa-solid fa-clock-rotate-left mr-2"></i>
-        <span>Order</span>
-      </a>
-      <a href="{% url 'dashboard' %}" class="flex items-center p-4 hover:bg-[#404040] rounded-lg">
-        <i class="fa-solid fa-chart-simple mr-2"></i>
-        <span>Dashboard</span>
-      </a>
+      <div class="menu">
+        <a href="{% url 'menu' %}" class="flex items-center p-4 hover:bg-[#404040] rounded-lg">
+          <i class="fa-solid fa-bars mr-2"></i>
+          <span>Menu</span>
+        </a>
+      </div>
+
+      <div class="order">
+        <a href="{% url 'order_history' %}" class="flex items-center p-4 hover:bg-[#404040] rounded-lg">
+          <i class="fa-solid fa-clock-rotate-left mr-2"></i>
+          <span>Order</span>
+        </a>
+      </div>
+      <div class="relative inline-block text-left">
+        <div class="flex items-center p-4 hover:bg-[#404040] rounded-lg cursor-pointer" onclick="toggleDropdown()">
+          <i class="fa-solid fa-chart-simple mr-2"></i>
+          <span>Dashboard</span>
+          <i class="fa-solid fa-caret-down ml-2"></i>
+        </div>
+
+        <!-- Dropdown menu (initially hidden) -->
+        <div id="dashboardDropdown" class="hidden absolute right-0 mt-2 w-48 origin-top-right bg-gray-200 border border-gray-500 rounded-md shadow-lg z-10">
+          <div class="py-1">
+            <a href="{% url 'dashboard' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"><i class="fa-solid fa-sun pr-2"></i>Day</a>
+            <a href="{% url 'dashboard_all' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"><i class="fa-solid fa-store pr-2"></i>All</a>
+          </div>
+        </div>
+      </div>
     </nav>
   </div>
 
