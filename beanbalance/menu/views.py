@@ -36,6 +36,7 @@ class MenuView(View):
 
 class PaymentView(View):
     template_name = "payment.html"
+
     def get(self, request):
         return render(request, self.template_name)
 
@@ -45,13 +46,16 @@ class PaymentView(View):
         total = data.get('total')
         payment_method = data.get('payment_method')
 
-        employee = User.objects.get(id=1)
+        employee = User.objects.get(id=14)
+
+        # Get the current time in the configured timezone
+        current_time = timezone.localtime()
 
         # Create an order
         order = Order.objects.create(
             amount=total,
-            order_date=timezone.now().date(),
-            order_time=timezone.now().time(),
+            order_date=current_time.date(),  # Use local timezone date
+            order_time=current_time.time(),   # Use local timezone time
             employee=employee
         )
 
@@ -63,19 +67,15 @@ class PaymentView(View):
                 order=order,
                 menu=menu,
                 quantity=quantity
-                )
+            )
 
         # Create a payment record for the order
         Payment.objects.create(
             order=order,
             amount=total,
             payment_method=payment_method,
-            payment_date=timezone.now().date(),
-            payment_time=timezone.now().time()
+            payment_date=current_time.date(),  # Use local timezone date
+            payment_time=current_time.time()    # Use local timezone time
         )
 
         return JsonResponse({'status': 'success', 'order_id': order.id})
-
-
-
-

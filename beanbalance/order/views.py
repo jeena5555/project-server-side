@@ -12,10 +12,7 @@ class OrderHistoryView(View):
     def get(self, request):
         today = timezone.now().date()
 
-        if 'order_date' in request.GET:
-            form = DateFilterForm(request.GET)
-        else:
-            form = DateFilterForm(initial={'order_date': today})
+        form = DateFilterForm(request.GET or {'order_date': today})
 
         orders = Order.objects.all()
 
