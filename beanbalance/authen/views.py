@@ -1,8 +1,14 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import logout, login, authenticate
-from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
+
+from django.contrib.auth.models import Group
+
 
 class LoginView(View):
 
@@ -14,13 +20,19 @@ class LoginView(View):
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request,user)
-            return redirect('test')
+            login(request, user)
+
+            position = user.groups.first().name
+
+            if position == 'Manager':
+                return redirect('dashboard')
+            elif position == 'Cashire':
+                return redirect('menu')
+
         else:
             messages.error(request, "Username or password is not correct")
             return render(request, 'login.html', {"form": form})
 
-        return render(request,'login.html', {"form":form})
 
 
 

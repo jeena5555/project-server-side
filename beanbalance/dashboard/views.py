@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from dashboard.forms import SelectSalesTrendsForm, GenerateReportForm
 from order.models import Order, OrderMenu
 from menu.models import Menu
@@ -12,7 +13,9 @@ from django.db.models.functions import TruncHour
 
 
 
-class DashboardView(View):
+class DashboardView(LoginRequiredMixin, View):
+    login_url = "/authen/"
+
     template_name = "dashboard_date.html"
 
     def get(self, request):
@@ -125,7 +128,9 @@ class DashboardView(View):
         return graph_data, labels
 
 
-class DashboardAllView(View):
+class DashboardAllView(LoginRequiredMixin, View):
+    login_url = "/authen/"
+
     template_name = 'dashboard_all.html'
 
     def get(self, request):

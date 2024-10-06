@@ -38,8 +38,9 @@
           <span>Order</span>
         </a>
       </div>
-      <div class="relative inline-block text-left">
-        <div class="flex items-center p-4 hover:bg-[#404040] rounded-lg cursor-pointer" onclick="toggleDropdown()">
+
+      <div class="dashboard relative inline-block text-left">
+        <div class="flex items-center p-4 hover:bg-[#404040] rounded-lg cursor-pointer" onclick="dashboardDropdown()">
           <i class="fa-solid fa-chart-simple mr-2"></i>
           <span>Dashboard</span>
           <i class="fa-solid fa-caret-down ml-2"></i>
@@ -54,6 +55,26 @@
         </div>
       </div>
     </nav>
+
+    <div class="user relative inline-block text-left pt-40">
+      <div class="flex justify-between items-center p-4 hover:bg-[#404040] rounded-lg cursor-pointer" onclick="logoutDropdown()">
+        <div class="name flex gap-2">
+          <span class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">{{ user.username|slice:":1" }}</span>
+          <p class="p-2 font-bold"> {{ user.username }} </p>
+        </div>
+
+        <div class="setting">
+          <i class="fa-solid fa-gear"></i>
+        </div>
+      </div>
+
+      <!-- Dropdown menu (initially hidden) -->
+      <div id="logoutDropdown" class="hidden absolute right-0 mt-2 w-48 origin-top-right bg-gray-200 border border-gray-500 rounded-md shadow-lg z-10">
+          <div class="py-1">
+              <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"><b>Logout</b></a>
+          </div>
+      </div>
+    </div>
   </div>
 
   <!-- Main Content -->

@@ -2,11 +2,16 @@
 
 from django.shortcuts import render
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
 from django.utils import timezone
 from order.models import Order, OrderMenu
 from order.forms import DateFilterForm
 
-class OrderHistoryView(View):
+class OrderHistoryView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = "/authen/"
+    permission_required = ["order.view_order"]
+
     template_name = "order_history.html"
 
     def get(self, request):

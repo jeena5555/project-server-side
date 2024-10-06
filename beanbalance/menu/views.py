@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.utils import timezone
 
 from menu.models import Menu, Category
@@ -14,7 +15,10 @@ import json
 
 # Create your views here.
 
-class MenuView(View):
+class MenuView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = "/authen/"
+    permission_required = ["order.add_order"]
+
     template_name = "menu.html"
 
     def get(self, request):
@@ -34,7 +38,10 @@ class MenuView(View):
         }
         return render(request, self.template_name, context)
 
-class PaymentView(View):
+class PaymentView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = "/authen/"
+    permission_required = ["payment.add_payment"]
+
     template_name = "payment.html"
 
     def get(self, request):
