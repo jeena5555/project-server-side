@@ -1,0 +1,113 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}Bean Balance Menu{% endblock %}
+{% block content %}
+<script src="{% static 'js/edit_manage.js' %}"></script>
+<div class="container mx-auto w-full flex">
+    <div class="w-2/3 text-white px-6 sticky top-0 h-screen overflow-y-scroll" style="background-color: #292C2D;">
+        <div class="sticky top-0 bg-[#292C2D] z-10">
+            <div class="mt-6 mb-6">
+                <input type="text" id="search" placeholder="Search" class="w-full bg-[#404040] text-white px-4 py-2 rounded-full">
+            </div>
+
+            <!-- Add Category & Filters -->
+            <div class="flex flex-wrap gap-3">
+                <button onclick="renderPage('add_category')" class="px-4 rounded-full border-2 flex items-center text-black" style="background-color:#ffffff;">
+                    Add Category <span class="ml-2 text-2xl">+</span>
+                </button>
+                <a href="?category=ALL" class="category-btn border-2 border-white text-white rounded-full bg-transparent hover:bg-white hover:text-black px-4 py-2 {% if selected_category == 'ALL' %}bg-white text-black{% endif %}">
+                    ALL
+                </a>
+                {% for category in categories %}
+                    <a
+                        href="?category={{ category.name }}"
+                        class="category-btn border-2 border-white text-white rounded-full bg-transparent hover:bg-white hover:text-black px-4 py-2 {% if selected_category == category.name %}bg-white text-black{% endif %}">
+                        {{ category.name }}
+                    </a>
+                {% endfor %}
+            </div>
+
+            <div>
+                <h1 id="category-title" class="text-4xl font-bold text-white p-6">{{ selected_category }}</h1>
+                <div class="flex flex-wrap gap-3 mb-3">
+                    <button onclick="renderPage('add_menu')" class="px-4 py-1 rounded-full border-2 flex items-center text-black" style="background-color:#ffffff;">
+                        Add Menu <span class="ml-2 text-2xl">+</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="menu-items" class="grid grid-cols-3 gap-4 overflow-y-auto mb-6">
+            {% for menu in menus %}
+                <div class="menu-item bg-[#404040] p-6 rounded-lg" data-category="{{ item.category }}">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xl font-semibold">{{ menu.name }}</h3>
+                        <button onclick="renderPage('edit_menu', {{menu.id}})">
+                            <i class="fa-regular fa-pen-to-square text-2xl"></i>
+                        </button>
+                    </div>
+                    <p class="text-white font-semibold text-2xl mb-2">{{ menu.price }}</p>
+                    <p class="text-sm text-gray-500">{{ menu.description }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Add Category Form -->
+    <div id="add-category-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll hidden">
+        <h2 class="text-2xl font-semibold mb-6">Add Category</h2>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            {{ add_category_form }}
+            <button type="submit" name="form_type" value="category" class="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition duration-300">Add Category</button>
+        </form>
+    </div>
+
+    <!-- Right Section (Edit Menu Form) -->
+    <div id="edit-menu-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll hidden">
+        <h2 class="text-2xl font-semibold mb-6">Edit</h2>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            
+            {{ form }}
+
+            <button type="submit" class="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition duration-300">Submit</button>
+        </form>
+    </div>
+
+    <!-- Right Panel (Add/Edit Menu Form) -->
+    <div id="add-menu-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll hidden">
+        <h2 class="text-2xl font-semibold mb-6">Add Menu</h2>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            
+            <!-- Category Dropdown -->
+            <div>
+                {{ add_menu_form.category.label_tag }}
+                {{ add_menu_form.category }}
+            </div>
+
+            <!-- Menu Name Field -->
+            <div>
+                {{ add_menu_form.name.label_tag }}
+                {{ add_menu_form.name }}
+            </div>
+
+            <!-- Price Field -->
+            <div>
+                {{ add_menu_form.price.label_tag }}
+                {{ add_menu_form.price }}
+            </div>
+
+            <!-- Description Field -->
+            <div>
+                {{ add_menu_form.description.label_tag }}
+                {{ add_menu_form.description }}
+            </div>
+
+            <button type="submit" name="form_type" value="menu" class="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition duration-300">Submit</button>
+        </form>
+    </div>
+
+
+{% endblock %}

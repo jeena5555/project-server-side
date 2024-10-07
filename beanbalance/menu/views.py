@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect,get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -8,6 +8,7 @@ from django.utils import timezone
 from menu.models import Menu, Category
 from order.models import Order, OrderMenu, Payment
 from django.contrib.auth.models import User
+from menu.forms import CategoryForm, MenuForm
 
 
 import json
@@ -76,6 +77,60 @@ class PaymentView(View):
 
         return JsonResponse({'status': 'success', 'order_id': order.id})
 
+class MenuManageView(View):
+    template_name = "manage.html"
+    def get(self, request):
+        add_category_form = CategoryForm()
+        add_menu_form = MenuForm()
+        categories = Category.objects.all()
+        menus = Menu.objects.all()
+        
+        context = {
+            "add_category_form": add_category_form,
+            "add_menu_form": add_menu_form,
+            "categories" : categories,
+            "menus" : menus,
+        }
+        return render(request, self.template_name, context)
+    
+    def post(self, request):
+        form_type = request.POST.get('form_type')
 
+        if form_type == 'category':
+            add_category_form = CategoryForm(request.POST)
+            if add_category_form.is_valid():
+                add_category_form.save()
+                return redirect('manage')
+        elif form_type == 'menu':
+            add_menu_form = MenuForm(request.POST)
+            if add_menu_form.is_valid():
+                add_menu_form.save()
+                return redirect('manage')
+        return render(request, self.template_name, {"add_category_form": add_category_form, "add_menu_form": add_menu_form})  # Re-render the form with errors if invalid
+    
+class editMenuView(View):
+    template_name = "manage.html"
 
+    def get(self, request):
+        menu_id = request.GET.get('id')
+        if menu_id:
+            try:
+                menu_item = Menu.objects.get(pk=menu_id)
+                form = MenuForm(instance=menu_item)  # Pre-fill the form with menu data
+                return render(request, self.template_name, {'form': form, 'menu_id': menu_id})
+            except Menu.DoesNotExist:
+                return JsonResponse({'error': 'Menu item not found.'}, status=404)
+        return JsonResponse({'error': 'Menu ID not provided.'}, status=400)
 
+    # def post(self, request):
+    #     menu_id = request.POST.get('id')
+    #     if menu_id:
+    #         menu_item = get_object_or_404(Menu, pk=menu_id)
+    #         form = MenuForm(request.POST, instance=menu_item)
+    #         if form.is_valid():
+    #             form.save()  # Save the updated menu item
+    #             return JsonResponse({'message': 'Menu item updated successfully.'})
+    #         else:
+    #             # Form is not valid, send errors
+    #             return render(request, self.template_name, {'form': form, 'menu_id': menu_id})
+    #     return JsonResponse({'error': 'Invalid menu ID or data.'}, status=400)

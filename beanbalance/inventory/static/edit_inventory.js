@@ -10,20 +10,20 @@ function renderEditInventory(itemId) {
     const quantity = itemCard.dataset.quantity;
 
     // Hide the add form if it is visible
-    const addFormContainer = document.getElementById('add-category-form');
+    const addFormContainer = document.getElementById('add-inventory-form');
     if (addFormContainer) {
       addFormContainer.classList.add('hidden');
     }
 
     // Show and populate the edit form
-    const editFormContainer = document.getElementById('edit-category-form'); // Ensure this matches your form container
+    const editFormContainer = document.getElementById('edit-inventory-form'); // Ensure this matches your form container
     if (editFormContainer) {
       editFormContainer.classList.remove('hidden'); // Make sure the form is visible
 
       // Populate form fields with the item data
-      document.getElementById('category-name').value = name || '';
-      document.getElementById('category-price').value = price || '';
-      document.getElementById('category-quantity').value = quantity || '';
+      document.getElementById('inventory-name').value = name || '';
+      document.getElementById('inventory-price').value = price || '';
+      document.getElementById('inventory-quantity').value = quantity || '';
 
       // Store the item ID for further operations
       document.getElementById('edit-form').setAttribute('data-item-id', itemId);
@@ -36,13 +36,13 @@ function renderEditInventory(itemId) {
 // Function to render the add form
 function renderAddInventory() {
   // Hide the edit form if it is visible
-  const editFormContainer = document.getElementById('edit-category-form');
+  const editFormContainer = document.getElementById('edit-inventory-form');
   if (editFormContainer) {
     editFormContainer.classList.add('hidden');
   }
 
   // Show the add form
-  const addFormContainer = document.getElementById('add-category-form'); // Ensure this matches your form container
+  const addFormContainer = document.getElementById('add-inventory-form'); // Ensure this matches your form container
   if (addFormContainer) {
     addFormContainer.classList.remove('hidden'); // Make sure the form is visible
   }
@@ -53,9 +53,9 @@ function renderAddInventory() {
 function updateInventory() {
   const itemId = document.getElementById('edit-form').getAttribute('data-item-id');
   const updatedItem = {
-    name: document.getElementById('category-name').value,
-    price: parseFloat(document.getElementById('category-price').value),
-    quantity: parseInt(document.getElementById('category-quantity').value, 10),
+    name: document.getElementById('inventory-name').value,
+    price: parseFloat(document.getElementById('inventory-price').value),
+    quantity: parseInt(document.getElementById('inventory-quantity').value, 10),
   };
 
   fetch(`/inventory/update/${itemId}/`, {
