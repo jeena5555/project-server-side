@@ -40,7 +40,7 @@ class MenuView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
 class PaymentView(LoginRequiredMixin, PermissionRequiredMixin, View):
     login_url = "/authen/"
-    permission_required = ["payment.add_payment"]
+    permission_required = ["order.add_payment"]
 
     template_name = "payment.html"
 
