@@ -1,8 +1,7 @@
-// Function to render the edit form and populate fields
-function rendereditpage(employeeId) {
-  // Find the employee card by using the ID or some other approach
+function renderEditPage(employeeId) {
   const employeeCard = document.querySelector(`[data-id="${employeeId}"]`);
-  console.log(employeeCard);
+  console.log('employeeCard.dataset : ', employeeCard.dataset)
+
 
   if (employeeCard) {
     // Extract employee data from data attributes
@@ -11,37 +10,85 @@ function rendereditpage(employeeId) {
     const gender = employeeCard.dataset.gender;
     const birthDate = employeeCard.dataset.birthDate;
     const position = employeeCard.dataset.position;
+    const account = employeeCard.dataset.account;
+    const password = employeeCard.dataset.password;
+    const salary = employeeCard.dataset.salary;
 
     // Hide the add form if visible
     const addFormContainer = document.getElementById('add-employee-form');
-    addFormContainer.classList.add('hidden');
-    
+    if (addFormContainer) {
+      addFormContainer.classList.add('hidden');
+    }
 
     // Show and populate the edit form
     const editFormContainer = document.getElementById('edit-form-container');
-    
-    editFormContainer.classList.remove('hidden'); // Show the form
+    if (editFormContainer) {
+      editFormContainer.classList.remove('hidden');
 
-      // Populate form fields with employee data
+      // Populate the form fields with employee data
       document.getElementById('first-name').value = firstName || '';
       document.getElementById('last-name').value = lastName || '';
-      document.getElementById('gender').value = gender || 'Male';
-      document.getElementById('birth-date').value = birthDate || '';
+      document.getElementById('gender').value = gender || '';
+      document.getElementById('birth-date').value = new Date(birthDate).toISOString().split('T')[0]; // Convert date format
       document.getElementById('position').value = position || '';
+      document.getElementById('account').value = account || '';
+      document.getElementById('password').value = password || '';
+      document.getElementById('salary').value = salary || '';
+      console.log('position : ', position)
+      // Set employee ID to be used for updates
+      document.getElementById('edit-form').setAttribute('data-employee-id', employeeId);
     }
+  } else {
+    console.error('Employee not found for ID:', employeeId);
+  }
 }
 
 // Function to render the add employee form
 function renderaddemployee() {
   // Hide the edit form if it is visible
   const editFormContainer = document.getElementById('edit-form-container');
-  
-  editFormContainer.classList.add('hidden'); // Hide the edit form
-  
+  if (editFormContainer) {
+    editFormContainer.classList.add('hidden'); // Hide the edit form
+  }
 
   // Show the add employee form
   const addFormContainer = document.getElementById('add-employee-form');
-  
-  addFormContainer.classList.remove('hidden'); // Make sure the add employee form is visible
+  if (addFormContainer) {
+    addFormContainer.classList.remove('hidden'); // Make sure the add employee form is visible
+  }
 }
 
+// Function to update the employee details
+function updateEmployee(event) {
+  event.preventDefault();  // Prevent form submission
+
+  const employeeId = document.getElementById('edit-form').getAttribute('data-employee-id');
+  const updatedEmployee = {
+    first_name: document.getElementById('first-name').value,
+    last_name: document.getElementById('last-name').value,
+    account: document.getElementById('account').value,
+    password: document.getElementById('password').value,
+    gender: document.getElementById('gender').value,
+    birth_date: document.getElementById('birth-date').value,
+    position: document.getElementById('position').value,
+    salary: parseFloat(document.getElementById('salary').value),
+  };
+
+  fetch(`/employees/update/${employeeId}/`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+    },
+    body: JSON.stringify(updatedEmployee),  // Send the updated employee data
+  })
+  .then(response => {
+    if (response.ok) {
+      console.log('Employee updated successfully');
+      window.location.reload();  // Reload the page to see updated data
+    } else {
+      console.error('Failed to update employee:', response.statusText);
+    }
+  })
+  .catch(error => console.error('Error:', error));
+}

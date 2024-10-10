@@ -136,5 +136,4 @@ class AddEmployeeForm(forms.ModelForm):
         if salary and salary <= 0:
             raise forms.ValidationError("Salary must be greater than zero.")
         return salary
-    
 
