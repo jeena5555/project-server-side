@@ -12,22 +12,6 @@
         <input type="text" id="search" placeholder="Search" class="w-full bg-[#404040] text-white px-4 py-2 rounded-full">
       </div>
 
-      <!-- Add Position & Filters -->
-      <div class="flex flex-wrap gap-3 mb-3">
-        <button class="px-4 py-2 rounded-full flex items-center text-black" style="background-color:#ffffff;">
-          Add Position <span class="ml-2 text-2xl">+</span>
-        </button>
-        <div class="flex space-x-2">
-          <button class="px-4 py-2 rounded-full text-white" style="background-color: #797B7E">ALL</button>
-          <button class="px-4 py-2 border-2 border-white text-white rounded-full bg-transparent hover:bg-white hover:text-black">
-            Manager
-          </button>
-          <button class="px-4 py-2 border-2 border-white text-white rounded-full bg-transparent hover:bg-white hover:text-black">
-            Cashier
-          </button>
-        </div>
-      </div>
-
       <!-- Manager Section -->
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-semibold text-white">Manager</h2>
@@ -50,7 +34,7 @@
           data-position="{{ item.employee.position.name }}">
           <div class="flex items-center space-x-4">
             <div class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
-              P
+              {{ item.employee.first_name|slice:":1" }}
             </div>
             <div>
               <h3 class="font-semibold text-white">{{ item.employee.first_name }}</h3>
