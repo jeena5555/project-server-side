@@ -92,3 +92,45 @@ function updateEmployee(event) {
   })
   .catch(error => console.error('Error:', error));
 }
+
+function deleteEmployee() {
+  const employeeId = document.getElementById('edit-form').getAttribute('data-employee-id');
+
+  if (!confirm("Are you sure you want to delete this employee?")) {
+    return; // If the user cancels the deletion, stop the function
+  }
+
+  fetch(`/employees/delete/${employeeId}/`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value, // Include CSRF token for security
+    },
+  })
+    .then(response => {
+      if (response.ok) {
+        console.log('Employee deleted successfully');
+        window.location.reload(); // Reload the page to reflect the deletion
+      } else {
+        console.error('Failed to delete employee:', response.statusText);
+      }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const searchElement = document.getElementById('search');
+  if (searchElement) {
+      searchElement.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          document.querySelectorAll('.employee-card').forEach(item => {
+              const name = item.querySelector('h3').textContent.toLowerCase();
+              if (name.includes(searchTerm)) {
+                  item.style.display = 'block';
+              } else {
+                  item.style.display = 'none';
+              }
+          });
+      });
+  }
+});

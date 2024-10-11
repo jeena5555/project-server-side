@@ -69,12 +69,17 @@ class EmployeeUpdateView(View):
             return JsonResponse({'error': str(e)}, status=500)  # Error response
             return JsonResponse({'error': str(e)}, status=500)
 
-# Delete employee view
 class EmployeeDeleteView(View):
     def delete(self, request, employee_id):
         try:
+            # Get the employee object or return a 404 if not found
             employee = get_object_or_404(Employee, id=employee_id)
+            user = employee.account 
+
+            # Delete the employee and the associated User account
             employee.delete()
+            user.delete()
+
             return JsonResponse({'message': 'Employee deleted successfully'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)

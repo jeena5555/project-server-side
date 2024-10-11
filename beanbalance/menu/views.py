@@ -150,3 +150,28 @@ class MenuDeleteView(View):
         except Exception as e:
             # Return an error response with the exception message
             return JsonResponse({'error': str(e)}, status=500)
+
+class CategoryUpdateView(View):
+    def put(self, request, category_id):
+        try:
+            body = json.loads(request.body)
+            category = get_object_or_404(Category, id=category_id)
+            
+            # Update category name
+            category.name = body.get('name', category.name)
+            category.save()
+
+            return JsonResponse({'message': 'Category updated successfully'})
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+        
+class CategoryDeleteView(View):
+    def delete(self, request, category_id):
+        try:
+            category = get_object_or_404(Category, id=category_id)
+            category.delete()
+            return JsonResponse({'message': 'Category deleted successfully'})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
