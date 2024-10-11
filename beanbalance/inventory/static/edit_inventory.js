@@ -90,3 +90,20 @@ function deleteInventory() {
   })
   .catch((error) => console.error('Error:', error));
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  const searchElement = document.getElementById('search');
+  if (searchElement) {
+      searchElement.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          document.querySelectorAll('.item-card').forEach(item => {
+              const name = item.querySelector('h3').textContent.toLowerCase();
+              if (name.includes(searchTerm)) {
+                  item.style.display = '';
+              } else {
+                  item.style.display = 'none';
+              }
+          });
+      });
+  }
+});

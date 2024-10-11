@@ -14,6 +14,14 @@ function renderEditMenu(menuId) {
     if (addFormContainer) {
       addFormContainer.classList.add('hidden');
     }
+    const editCategoryName = document.getElementById('edit-category-form');
+    if (editCategoryName) {
+      editCategoryName.classList.add('hidden');
+    }
+    const addCategoryForm = document.getElementById('add-category-form');
+    if (addCategoryForm) {
+      addCategoryForm.classList.add('hidden');
+    }
 
     // Show and populate the edit form
     const editFormContainer = document.getElementById('edit-menu-form');
@@ -40,7 +48,10 @@ function renderAddMenu() {
   if (editFormContainer) {
     editFormContainer.classList.add('hidden');
   }
-
+  const editCategoryName = document.getElementById('edit-category-form');
+  if (editCategoryName) {
+    editCategoryName.classList.add('hidden');
+  }
   const addFormContainer = document.getElementById('add-menu-form');
   if (addFormContainer) {
     addFormContainer.classList.remove('hidden');
@@ -121,7 +132,10 @@ function renderAddCategory() {
   if (addMenuFormContainer) {
     addMenuFormContainer.classList.add('hidden');
   }
-
+  const editFormContainer = document.getElementById('edit-category-form');
+  if (editFormContainer) {
+    editFormContainer.classList.add('hidden');
+  }
   const addCategoryFormContainer = document.getElementById('add-category-form');
   if (addCategoryFormContainer) {
     addCategoryFormContainer.classList.remove('hidden');
@@ -133,6 +147,15 @@ function renderEditCategoryName(categoryId, categoryName) {
   const addFormContainer = document.getElementById('add-category-form');
   if (addFormContainer) {
     addFormContainer.classList.add('hidden');
+  }
+  const editMenuFormContainer = document.getElementById('edit-menu-form');
+  if (editMenuFormContainer) {
+    editMenuFormContainer.classList.add('hidden');
+  }
+
+  const addMenuFormContainer = document.getElementById('add-menu-form');
+  if (addMenuFormContainer) {
+    addMenuFormContainer.classList.add('hidden');
   }
 
   // Show the edit form

@@ -34,7 +34,6 @@ function renderEditPage(employeeId) {
       document.getElementById('account').value = account || '';
       document.getElementById('password').value = password || '';
       document.getElementById('salary').value = salary || '';
-      console.log('position : ', position)
       // Set employee ID to be used for updates
       document.getElementById('edit-form').setAttribute('data-employee-id', employeeId);
     }
@@ -126,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
           document.querySelectorAll('.employee-card').forEach(item => {
               const name = item.querySelector('h3').textContent.toLowerCase();
               if (name.includes(searchTerm)) {
-                  item.style.display = 'block';
+                  item.style.display = '';
               } else {
                   item.style.display = 'none';
               }

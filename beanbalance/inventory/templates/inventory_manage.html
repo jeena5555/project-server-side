@@ -31,14 +31,14 @@
 
             <!-- Inventory Items -->
             {% for item in inventory %}
-            <div class="p-4 rounded-lg grid grid-cols-4 my-4 text-center"
+            <div class="item-card p-4 rounded-lg grid grid-cols-4 my-4 text-center"
                 style="background-color:#404040;"
                 data-id="{{ item.id }}"
                 data-name="{{ item.name }}"
                 data-price="{{ item.price }}"
                 data-quantity="{{ item.quantity }}">
             
-                <span>{{ item.name }}</span>
+                <h3>{{ item.name }}</h3>
                 <span>{{ item.price }}</span>
                 <span>{{ item.quantity }}</span>
                 <div class="text-center">
