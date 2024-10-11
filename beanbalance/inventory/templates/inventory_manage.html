@@ -2,6 +2,7 @@
 {% load static %}
 {% block content %}
 <script src="{% static '../static/edit_inventory.js' %}"></script>
+<link rel="stylesheet" href="{% static 'inventory.css' %}">
 <div class="container mx-auto w-full flex">
 
 
@@ -31,7 +32,7 @@
 
             <!-- Inventory Items -->
             {% for item in inventory %}
-            <div class="item-card p-4 rounded-lg grid grid-cols-4 my-4 text-center"
+            <div class="{% if item.quantity <= 2 %}text-red-500 blink {% else %}text-white{% endif %} item-card p-4 rounded-lg grid grid-cols-4 my-4 text-center"
                 style="background-color:#404040;"
                 data-id="{{ item.id }}"
                 data-name="{{ item.name }}"
@@ -40,7 +41,9 @@
             
                 <h3>{{ item.name }}</h3>
                 <span>{{ item.price }}</span>
-                <span>{{ item.quantity }}</span>
+                <span>
+                    {{ item.quantity }}
+                </span>
                 <div class="text-center">
                     <button style="width:20px;" onclick="renderEditInventory('{{ item.id }}')">
                         <i class="fa-solid fa-pen"></i>
