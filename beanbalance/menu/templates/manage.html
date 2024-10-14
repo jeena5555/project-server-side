@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% block title %}Bean Balance Menu{% endblock %}
 {% block content %}
@@ -37,26 +37,26 @@
 
         <div id="menu-items" class="grid grid-cols-3 gap-4 overflow-y-auto mb-6">
             {% for menu in menus %}
-                <div class="menu-card bg-[#404040] p-6 rounded-lg" 
-                     data-id="{{ menu.id }}" 
-                     data-name="{{ menu.name }}" 
-                     data-price="{{ menu.price }}" 
-                     data-description="{{ menu.description }}" 
+                <div class="menu-card bg-[#404040] p-6 rounded-lg"
+                     data-id="{{ menu.id }}"
+                     data-name="{{ menu.name }}"
+                     data-price="{{ menu.price }}"
+                     data-description="{{ menu.description }}"
                      data-category="{{ menu.category.id }}">
-                    
+
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="text-xl font-semibold">{{ menu.name }}</h3>
                         <button onclick="renderEditMenu('{{menu.id}}')">
                             <i class="fa-regular fa-pen-to-square text-2xl"></i>
                         </button>
                     </div>
-                    
+
                     <p class="text-white font-semibold text-2xl mb-2">{{ menu.price }}</p>
                     <p class="text-sm text-gray-500">{{ menu.description }}</p>
                 </div>
             {% endfor %}
         </div>
-        
+
     </div>
 
     <!-- Add Category Form -->
@@ -76,15 +76,15 @@
             <!-- Menu Name -->
             <label for="menu-name">Name</label>
             <input type="text" id="menu-name" name="name" class="w-full p-2 mb-4 border rounded">
-            
+
             <!-- Price -->
             <label for="menu-price">Price</label>
             <input type="text" id="menu-price" name="price" class="w-full p-2 mb-4 border rounded">
-            
+
             <!-- Description -->
             <label for="menu-description">Description</label>
             <textarea id="menu-description" name="description" class="w-full p-2 mb-4 border rounded"></textarea>
-            
+
             <!-- Category -->
             <label for="menu-category">Category</label>
             <select id="menu-category" name="category" class="w-full p-2 mb-4 border rounded">
@@ -92,7 +92,7 @@
                     <option value="{{ category.id }}">{{ category.name }}</option>
                 {% endfor %}
             </select>
-    
+
             <div class="flex justify-center border-t pt-4 mt-4">
                 <!-- Save Button -->
                 <button type="button" onclick="updateMenu()" class="w-24 bg-black text-white py-3 rounded-full hover:bg-gray-800 mr-5">Save</button>

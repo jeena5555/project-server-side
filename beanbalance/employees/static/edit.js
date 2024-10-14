@@ -11,7 +11,6 @@ function renderEditPage(employeeId) {
     const birthDate = employeeCard.dataset.birthDate;
     const position = employeeCard.dataset.position;
     const account = employeeCard.dataset.account;
-    const password = employeeCard.dataset.password;
     const salary = employeeCard.dataset.salary;
 
     // Hide the add form if visible
@@ -32,7 +31,6 @@ function renderEditPage(employeeId) {
       document.getElementById('birth-date').value = new Date(birthDate).toISOString().split('T')[0]; // Convert date format
       document.getElementById('position').value = position || '';
       document.getElementById('account').value = account || '';
-      document.getElementById('password').value = password || '';
       document.getElementById('salary').value = salary || '';
       // Set employee ID to be used for updates
       document.getElementById('edit-form').setAttribute('data-employee-id', employeeId);
@@ -66,7 +64,6 @@ function updateEmployee(event) {
     first_name: document.getElementById('first-name').value,
     last_name: document.getElementById('last-name').value,
     account: document.getElementById('account').value,
-    password: document.getElementById('password').value,
     gender: document.getElementById('gender').value,
     birth_date: document.getElementById('birth-date').value,
     position: document.getElementById('position').value,
