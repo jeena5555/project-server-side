@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% block content %}
 <script src="{% static '../static/edit_inventory.js' %}"></script>
@@ -37,7 +37,7 @@
                 data-name="{{ item.name }}"
                 data-price="{{ item.price }}"
                 data-quantity="{{ item.quantity }}">
-            
+
                 <span>{{ item.name }}</span>
                 <span>{{ item.price }}</span>
                 <span>{{ item.quantity }}</span>
@@ -72,19 +72,19 @@
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-3xl font-bold">Edit Inventory</h2>
         </div>
-    
+
         <!-- The form to update or delete an inventory item -->
         <form id="edit-form" method="post" onsubmit="event.preventDefault(); updateInventory();">
             {% csrf_token %}
             <label class="block mb-2">Name</label>
             <input type="text" id="category-name" name="name" class="w-full p-2 mb-4 border rounded" />
-    
+
             <label class="block mb-2">Price</label>
             <input type="text" id="category-price" name="price" class="w-full p-2 mb-4 border rounded" />
-    
+
             <label class="block mb-2">Quantity</label>
             <input type="number" id="category-quantity" name="quantity" class="w-full p-2 mb-4 border rounded" />
-    
+
             <div class="flex justify-center border-t pt-4 mt-4">
                 <!-- Save Button -->
                 <button type="submit" class="w-24 bg-black text-white py-3 rounded-full hover:bg-gray-800 mr-5">Save</button>

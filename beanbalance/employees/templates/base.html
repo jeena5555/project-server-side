@@ -1,20 +1,35 @@
-{% load tags %}
-
+{% load static %}
+{% load tags %}  <!-- Load the custom tag file -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Bean Balance{% endblock %}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+  <title>{% block title %}Bean Balance{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="{% static 'js/nav.js' %}"></script>
 </head>
-<body>
-    {% block navbar %}
+<body class="bg-gray-100">
+    <div class="w-64 h-screen p-4 bg-black text-white fixed top-0 left-0 flex flex-col">
+        <!-- Logo and Date Section -->
+        <div class="p-6 text-[#C2DBE9]">
+          <div class="flex items-center justify-center">
+            <img src="{% static 'images/bean_balance_logo.png' %}" alt="Bean Balance Logo" class="w-60 h-auto">
+          </div>
+          <div class="text-center text-xl font-semibold">{{ current_weekday }}</div>
+          <div class="text-center text-8xl font-bold mb-1 ">{{ current_day }}</div>
+          <div class="text-center text-xl font-semibold mb-1">{{ current_month }} {{ current_year }}</div>
+        </div>
+
         {% get_navbar as navbar_template %}
         {% include navbar_template %}
-    {% endblock %}
+    </div>
+    <div class="ml-64 flex-1">
+        {% block content %}
 
-    {% block content %}
-    
-    {% endblock %}
-
+        {% endblock %}
+    </div>
 </body>
 </html>
