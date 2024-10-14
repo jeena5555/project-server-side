@@ -14,7 +14,7 @@ class LoginView(View):
 
     def get(self, request):
         form = AuthenticationForm()
-        return render(request, 'login.html', {"form": form})
+        return render(request, "login.html", {"form": form})
 
     def post(self, request):
         form = AuthenticationForm(data=request.POST)
@@ -24,22 +24,18 @@ class LoginView(View):
 
             position = user.groups.first().name
 
-            if position == 'Manager':
-                return redirect('dashboard')
-            elif position == 'Cashire':
-                return redirect('menu')
+            if position == "Manager":
+                return redirect("dashboard")
+            elif position == "Cashier":
+                return redirect("menu")
 
         else:
             messages.error(request, "Username or password is not correct")
-            return render(request, 'login.html', {"form": form})
-
-
+            return render(request, "login.html", {"form": form})
 
 
 class LogoutView(View):
 
     def get(self, request):
         logout(request)
-        return redirect('login')
-
-
+        return redirect("login")
