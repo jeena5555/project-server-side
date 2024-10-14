@@ -11,7 +11,7 @@ class InventoryView(View):
 
     def get(self, request):
         # Display the inventory list
-        inventory = Category.objects.all()
+        inventory = Category.objects.all().order_by('quantity')
         form = CategoryForm()
         return render(request, self.template_name, {"inventory": inventory, "form": form})
 
@@ -22,7 +22,7 @@ class InventoryView(View):
             form.save()
             return redirect('inventory')  # Redirect to the inventory list after adding a new item
         # If form is not valid, re-render the page with errors
-        inventory = Category.objects.all()
+        inventory = Category.objects.all().order_by('quantity')
         return render(request, self.template_name, {"inventory": inventory, "form": form})
 
 # Update inventory view
