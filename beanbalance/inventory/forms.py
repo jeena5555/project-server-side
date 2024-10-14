@@ -29,3 +29,9 @@ class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = ('name', 'price', 'quantity')
+    
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if Category.objects.filter(name__iexact=name).exists():
+            raise forms.ValidationError(f"The '{name}' already exists.") 
+        return name

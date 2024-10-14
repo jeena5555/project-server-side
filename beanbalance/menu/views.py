@@ -1,24 +1,21 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect,get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.utils import timezone
 
 from menu.models import Menu, Category
 from order.models import Order, OrderMenu, Payment
 from django.contrib.auth.models import User
+from menu.forms import CategoryForm, MenuForm
 
 
 import json
 
 # Create your views here.
 
-class MenuView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    login_url = "/authen/"
-    permission_required = ["order.add_order"]
-
+class MenuView(View):
     template_name = "menu.html"
 
     def get(self, request):
@@ -38,12 +35,8 @@ class MenuView(LoginRequiredMixin, PermissionRequiredMixin, View):
         }
         return render(request, self.template_name, context)
 
-class PaymentView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    login_url = "/authen/"
-    permission_required = ["order.add_payment"]
-
+class PaymentView(View):
     template_name = "payment.html"
-
     def get(self, request):
         return render(request, self.template_name)
 
@@ -53,16 +46,13 @@ class PaymentView(LoginRequiredMixin, PermissionRequiredMixin, View):
         total = data.get('total')
         payment_method = data.get('payment_method')
 
-        employee = User.objects.get(id=14)
-
-        # Get the current time in the configured timezone
-        current_time = timezone.localtime()
+        employee = User.objects.get(id=1)
 
         # Create an order
         order = Order.objects.create(
             amount=total,
-            order_date=current_time.date(),  # Use local timezone date
-            order_time=current_time.time(),   # Use local timezone time
+            order_date=timezone.now().date(),
+            order_time=timezone.now().time(),
             employee=employee
         )
 
@@ -74,15 +64,114 @@ class PaymentView(LoginRequiredMixin, PermissionRequiredMixin, View):
                 order=order,
                 menu=menu,
                 quantity=quantity
-            )
+                )
 
         # Create a payment record for the order
         Payment.objects.create(
             order=order,
             amount=total,
             payment_method=payment_method,
-            payment_date=current_time.date(),  # Use local timezone date
-            payment_time=current_time.time()    # Use local timezone time
+            payment_date=timezone.now().date(),
+            payment_time=timezone.now().time()
         )
 
         return JsonResponse({'status': 'success', 'order_id': order.id})
+
+class MenuManageView(View):
+    template_name = "manage.html"
+    
+    def get(self, request):
+        add_category_form = CategoryForm()
+        add_menu_form = MenuForm()
+        categories = Category.objects.all()
+        menus = Menu.objects.all()
+
+        context = {
+            "add_category_form": add_category_form,
+            "add_menu_form": add_menu_form,
+            "categories": categories,
+            "menus": menus,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        form_type = request.POST.get('form_type')
+
+        add_category_form = CategoryForm()
+        add_menu_form = MenuForm()
+
+        if form_type == 'category':
+            add_category_form = CategoryForm(request.POST)
+            if add_category_form.is_valid():
+                add_category_form.save()
+                return redirect('manage')
+        elif form_type == 'menu':
+            add_menu_form = MenuForm(request.POST)
+            if add_menu_form.is_valid():
+                add_menu_form.save()
+                return redirect('manage')
+        
+        # Ensure forms are re-rendered with errors if validation fails
+        categories = Category.objects.all()
+        menus = Menu.objects.all()
+        return render(request, self.template_name, {
+            "add_category_form": add_category_form,
+            "add_menu_form": add_menu_form,
+            "categories": categories,
+            "menus": menus
+        })
+
+    
+class editMenuView(View):
+    def put(self, request, menu_id):
+        try:
+            body = json.loads(request.body)
+            menu_item = get_object_or_404(Menu, id=menu_id)
+            
+            menu_item.name = body.get('name')
+            menu_item.description = body.get('description')
+            menu_item.price = body.get('price')
+            menu_item.category_id = body.get('category')
+
+            menu_item.save()
+
+            return JsonResponse({'message': 'Menu updated successfully'})
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+        
+class MenuDeleteView(View):
+    def delete(self, request, menu_id):
+        try:
+            menu_item = get_object_or_404(Menu, id=menu_id)
+            menu_item.delete()
+            return JsonResponse({'message': 'Menu item deleted successfully'})
+        
+        except Exception as e:
+            # Return an error response with the exception message
+            return JsonResponse({'error': str(e)}, status=500)
+
+class CategoryUpdateView(View):
+    def put(self, request, category_id):
+        try:
+            body = json.loads(request.body)
+            category = get_object_or_404(Category, id=category_id)
+            
+            # Update category name
+            category.name = body.get('name', category.name)
+            category.save()
+
+            return JsonResponse({'message': 'Category updated successfully'})
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+        
+class CategoryDeleteView(View):
+    def delete(self, request, category_id):
+        try:
+            category = get_object_or_404(Category, id=category_id)
+            category.delete()
+            return JsonResponse({'message': 'Category deleted successfully'})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)

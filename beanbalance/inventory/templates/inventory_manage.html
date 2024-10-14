@@ -1,7 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'layout.html' %}
 {% load static %}
 {% block content %}
 <script src="{% static '../static/edit_inventory.js' %}"></script>
+<link rel="stylesheet" href="{% static 'inventory.css' %}">
 <div class="container mx-auto w-full flex">
 
 
@@ -31,24 +32,21 @@
 
             <!-- Inventory Items -->
             {% for item in inventory %}
-            <div class="p-4 rounded-lg grid grid-cols-4 my-4 text-center"
+            <div class="{% if item.quantity <= 2 %}text-red-500 blink {% else %}text-white{% endif %} item-card p-4 rounded-lg grid grid-cols-4 my-4 text-center"
                 style="background-color:#404040;"
                 data-id="{{ item.id }}"
                 data-name="{{ item.name }}"
                 data-price="{{ item.price }}"
                 data-quantity="{{ item.quantity }}">
-
-                <span>{{ item.name }}</span>
+            
+                <h3>{{ item.name }}</h3>
                 <span>{{ item.price }}</span>
-                <span>{{ item.quantity }}</span>
+                <span>
+                    {{ item.quantity }}
+                </span>
                 <div class="text-center">
                     <button style="width:20px;" onclick="renderEditInventory('{{ item.id }}')">
-                        <svg width="16" height="16" fill="#ffffff" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1" viewBox="0 0 306.637 306.637" xml:space="preserve">
-                            <g>
-                                <path d="M12.809,238.52L0,306.637l68.118-12.809l184.277-184.277l-55.309-55.309L12.809,238.52z M60.79,279.943l-41.992,7.896    l7.896-41.992L197.086,75.455l34.096,34.096L60.79,279.943z"/>
-                                <path d="M251.329,0l-41.507,41.507l55.308,55.308l41.507-41.507L251.329,0z M231.035,41.507l20.294-20.294l34.095,34.095    L265.13,75.602L231.035,41.507z"/>
-                            </g>
-                        </svg>
+                        <i class="fa-solid fa-pen"></i>
                     </button>
                 </div>
             </div>
@@ -58,33 +56,33 @@
 
 
     <!-- Right Section (Add Category Form) -->
-    <div id="add-category-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll hidden">
-        <h2 class="text-2xl font-semibold mb-6">Add Category</h2>
+    <div id="add-inventory-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll hidden">
+        <h2 class="text-2xl font-semibold mb-6">Add Inventory</h2>
         <form method="post" class="space-y-4">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition duration-300">Add Category</button>
+            <button type="submit" class="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition duration-300">Add inventory</button>
         </form>
     </div>
 
 
-    <div id="edit-category-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll hidden">
+    <div id="edit-inventory-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll hidden">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-3xl font-bold">Edit Inventory</h2>
         </div>
-
+    
         <!-- The form to update or delete an inventory item -->
         <form id="edit-form" method="post" onsubmit="event.preventDefault(); updateInventory();">
             {% csrf_token %}
             <label class="block mb-2">Name</label>
-            <input type="text" id="category-name" name="name" class="w-full p-2 mb-4 border rounded" />
-
+            <input type="text" id="inventory-name" name="name" class="w-full p-2 mb-4 border rounded" />
+    
             <label class="block mb-2">Price</label>
-            <input type="text" id="category-price" name="price" class="w-full p-2 mb-4 border rounded" />
-
+            <input type="text" id="inventory-price" name="price" class="w-full p-2 mb-4 border rounded" />
+    
             <label class="block mb-2">Quantity</label>
-            <input type="number" id="category-quantity" name="quantity" class="w-full p-2 mb-4 border rounded" />
-
+            <input type="number" id="inventory-quantity" name="quantity" class="w-full p-2 mb-4 border rounded" />
+    
             <div class="flex justify-center border-t pt-4 mt-4">
                 <!-- Save Button -->
                 <button type="submit" class="w-24 bg-black text-white py-3 rounded-full hover:bg-gray-800 mr-5">Save</button>

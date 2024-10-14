@@ -39,24 +39,50 @@ class EmployeeView(View):
 class EmployeeUpdateView(View):
     def put(self, request, employee_id):
         try:
-            body = json.loads(request.body)
-            employee = get_object_or_404(Employee, id=employee_id)
+            body = json.loads(request.body)  # Parse JSON request body
+            employee = get_object_or_404(Employee, id=employee_id)  # Fetch employee by ID
+
+            # Update employee fields
             employee.first_name = body.get('first_name', employee.first_name)
             employee.last_name = body.get('last_name', employee.last_name)
             employee.gender = body.get('gender', employee.gender)
             employee.birth_date = body.get('birth_date', employee.birth_date)
-            employee.account.groups = body.get('position', employee.account.groups)
-            employee.save()
-            return JsonResponse({'message': 'Employee updated successfully'})
+            employee.salary = body.get('salary', employee.salary)
+
+            # Update position (Group)
+            if body.get('position'):
+                group = Group.objects.get(name=body.get('position'))
+                employee.account.groups.clear()
+                employee.account.groups.add(group)
+
+            # Update the User account (optional)
+            if body.get('account'):
+                employee.account.username = body.get('account')
+
+            # Update password if it's provided (and different from default)
+            if body.get('password') and body['password'] != '********':
+                employee.account.set_password(body['password'])  # Set new password
+                employee.account.save()  # Save account changes
+
+            employee.save()  # Save employee changes
+
+            return JsonResponse({'message': 'Employee updated successfully'})  # Success message
+
         except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)  # Error response
             return JsonResponse({'error': str(e)}, status=500)
 
-# Delete employee view
 class EmployeeDeleteView(View):
     def delete(self, request, employee_id):
         try:
+            # Get the employee object or return a 404 if not found
             employee = get_object_or_404(Employee, id=employee_id)
+            user = employee.account 
+
+            # Delete the employee and the associated User account
             employee.delete()
+            user.delete()
+
             return JsonResponse({'message': 'Employee deleted successfully'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
