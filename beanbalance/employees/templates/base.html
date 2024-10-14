@@ -1,0 +1,20 @@
+{% load tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Bean Balance{% endblock %}</title>
+</head>
+<body>
+    {% block navbar %}
+        {% get_navbar as navbar_template %}
+        {% include navbar_template %}
+    {% endblock %}
+
+    {% block content %}
+    
+    {% endblock %}
+
+</body>
+</html>

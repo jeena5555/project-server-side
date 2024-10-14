@@ -7,6 +7,9 @@ from employees.forms import AddEmployeeForm
 import json
 from django.db import transaction
 
+from django.contrib.auth import logout
+from django.contrib.auth.views import PasswordChangeView
+from django.urls import reverse_lazy
 # Employee View to manage listing and adding employees
 class EmployeeView(View):
     template_name = 'employee_manage.html'
@@ -57,3 +60,15 @@ class EmployeeDeleteView(View):
             return JsonResponse({'message': 'Employee deleted successfully'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
+class ChangePasswordView(PasswordChangeView):
+    template_name = 'password_change.html'
+    success_url = reverse_lazy('login')  # Redirect to the login page after logout
+
+    def form_valid(self, form):
+        # Change the password
+        response = super().form_valid(form)
+        # Log out the user
+        logout(self.request)
+        # Redirect to the login page
+        return redirect(self.success_url)
