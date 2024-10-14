@@ -20,3 +20,12 @@ def add_class(field, css):
     if hasattr(field, 'as_widget'):
         return field.as_widget(attrs={"class": css})
     return field
+
+@register.simple_tag(takes_context=True)
+def get_navbar(context):
+    user = context['request'].user
+    if user.is_authenticated:
+        if user.groups.filter(name='Manager').exists():
+            return 'navbar_manager.html'
+        elif user.groups.filter(name='Cashire').exists():
+            return 'navbar_cashire.html'
