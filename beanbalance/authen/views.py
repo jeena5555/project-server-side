@@ -43,7 +43,3 @@ class LogoutView(View):
         return redirect('login')
 
 
-class TestView(View):
-
-    def get(self, request):
-        return render(request, 'test.html')
