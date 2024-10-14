@@ -136,4 +136,15 @@ class AddEmployeeForm(forms.ModelForm):
         if salary and salary <= 0:
             raise forms.ValidationError("Salary must be greater than zero.")
         return salary
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        first_name = cleaned_data.get('first_name')
+        last_name = cleaned_data.get('last_name')
+
+        # Check if another employee with the same first name and last name exists
+        if Employee.objects.filter(first_name=first_name, last_name=last_name).exists():
+            raise forms.ValidationError(f"An employee with the name '{first_name} {last_name}' already exists.")
+        
+        return cleaned_data
 

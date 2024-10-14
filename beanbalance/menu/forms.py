@@ -12,6 +12,11 @@ class CategoryForm(forms.ModelForm):
                 'placeholder': 'Category Name',
             }),
         }
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if Category.objects.filter(name__iexact=name).exists():
+            raise forms.ValidationError(f"The category '{name}' already exists.") 
+        return name
 
 # Form for adding/editing a Menu item
 class MenuForm(forms.ModelForm):
@@ -35,3 +40,8 @@ class MenuForm(forms.ModelForm):
                 'class': 'w-full p-2 mb-4 border rounded',
             }),
         }
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if Category.objects.filter(name__iexact=name).exists():
+            raise forms.ValidationError(f"The '{name}' already exists.") 
+        return name
