@@ -77,7 +77,7 @@ class EmployeeDeleteView(View):
         try:
             # Get the employee object or return a 404 if not found
             employee = get_object_or_404(Employee, id=employee_id)
-            user = employee.account 
+            user = employee.account
 
             # Delete the employee and the associated User account
             employee.delete()
@@ -89,7 +89,7 @@ class EmployeeDeleteView(View):
 
 class ChangePasswordView(PasswordChangeView):
     template_name = 'password_change.html'
-    success_url = reverse_lazy('login')  # Redirect to the login page after logout
+    success_url = reverse_lazy('login')
 
     def form_valid(self, form):
         # Change the password
