@@ -31,9 +31,19 @@ class EmployeeView(View):
             with transaction.atomic():
                 form.save()
             return redirect('employee')  # Redirect to the employee list after adding a new item
-        # If form is not valid, re-render the page with errors
         employees = Employee.objects.all()
-        return render(request, self.template_name, {"employees": employees, "form": form})
+        employee_positions = []
+        for employee in employees:
+            position = Group.user_set.through.objects.get(user_id=employee.account.id)
+            employee_positions.append({"employee": employee, "position": position})
+        
+        context = {
+            "employee_positions": employee_positions,
+            "form": form
+        }
+        
+        return render(request, self.template_name, context)
+
 
 # Update employee view
 class EmployeeUpdateView(View):
@@ -69,7 +79,6 @@ class EmployeeUpdateView(View):
             return JsonResponse({'message': 'Employee updated successfully'})  # Success message
 
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)  # Error response
             return JsonResponse({'error': str(e)}, status=500)
 
 class EmployeeDeleteView(View):

@@ -15,15 +15,24 @@ class InventoryView(View):
         form = CategoryForm()
         return render(request, self.template_name, {"inventory": inventory, "form": form})
 
+    # def post(self, request):
+    #     # Add a new category
+    #     form = CategoryForm(request.POST)
+    #     if form.is_valid():
+    #         form.save()
+    #         return redirect('inventory')  # Redirect to the inventory list after adding a new item
+    #     # If form is not valid, re-render the page with errors
+    #     inventory = Category.objects.all().order_by('quantity')
+    #     return render(request, self.template_name, {"inventory": inventory, "form": form})
+    
     def post(self, request):
-        # Add a new category
         form = CategoryForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('inventory')  # Redirect to the inventory list after adding a new item
-        # If form is not valid, re-render the page with errors
-        inventory = Category.objects.all().order_by('quantity')
-        return render(request, self.template_name, {"inventory": inventory, "form": form})
+            return JsonResponse({'success': True})  # ส่ง response เมื่อฟอร์มสำเร็จ
+        else:
+            # ส่งข้อผิดพลาดของฟอร์มกลับไปในรูปแบบ JSON
+            return JsonResponse({'success': False, 'errors': form.errors})
 
 # Update inventory view
 class InventoryUpdateView(View):

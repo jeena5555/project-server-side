@@ -1,0 +1,7 @@
+#errorModal {
+  display: none;
+}
+
+#errorModal.active {
+  display: flex;
+}

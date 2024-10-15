@@ -105,7 +105,71 @@
     <h2 class="text-2xl font-semibold mb-6">Add Employee</h2>
     <form method="post" class="space-y-4">
         {% csrf_token %}
-        {{ form.as_p }}
+        {% if form.non_field_errors %}
+        <div class="error text-red-500">
+            <ul>
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+      {% endif %}
+        <div class="first_name">
+      {% if form.first_name.errors %}
+        <p class="text-red-500 text-sm mt-2">{{ form.first_name.errors.0 }}</p>
+      {% endif %}
+          {{ form.first_name.label_tag }}
+          {{ form.first_name }}
+        </div>
+
+        <div class="last_name">
+          {% if form.last_name.errors %}
+          <p class="text-red-500 text-sm mt-2">{{ form.last_name.errors.0 }}</p>
+          {% endif %}
+          {{ form.last_name.label_tag }}
+          {{ form.last_name }}
+        </div>
+
+        <div class="username">
+          {% if form.username.errors %}
+          <p class="text-red-500 text-sm mt-2">{{ form.username.errors.0 }}</p>
+          {% endif %}
+          {{ form.username.label_tag }}
+          {{ form.username }}
+        </div>
+
+        <div class="password">
+          {% if form.password.errors %}
+          <p class="text-red-500 text-sm mt-2">{{ form.password.errors.0 }}</p>
+          {% endif %}
+          {{ form.password.label_tag }}
+          {{ form.password }}
+        </div>
+
+        <div class="gender">
+          {{ form.gender.label_tag }}
+          {{ form.gender }}
+        </div>
+
+        <div class="birth_date">
+          {% if form.birth_date.errors %}
+          <p class="text-red-500 text-sm mt-2">{{ form.birth_date.errors.0 }}</p>
+          {% endif %}
+          {{ form.birth_date.label_tag }}
+          {{ form.birth_date }}
+        </div>  
+
+        <div class="position">
+          {{ form.position.label_tag }}
+          {{ form.position }}
+        </div>
+        <div class="salary">
+          {% if form.salary.errors %}
+          <p class="text-red-500 text-sm mt-2">{{ form.salary.errors.0 }}</p>
+          {% endif %}
+          {{ form.salary.label_tag }}
+          {{ form.salary }}
+        </div>
         <button type="submit" class="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition duration-300">Add Employee</button>
     </form>
   </div>

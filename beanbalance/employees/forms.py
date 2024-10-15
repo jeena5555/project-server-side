@@ -1,7 +1,9 @@
 from django import forms
 from .models import Employee
 from django.contrib.auth.models import User, Group
+from django.contrib.auth.password_validation import validate_password
 from datetime import date
+from django.core.exceptions import ValidationError
 
 class AddEmployeeForm(forms.ModelForm):
     # Define each field with widgets and attributes for styling
@@ -94,6 +96,22 @@ class AddEmployeeForm(forms.ModelForm):
             "contact_number",
             "salary",
         )
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        first_name = cleaned_data.get("first_name")
+        last_name = cleaned_data.get("last_name")
+
+        if Employee.objects.filter(first_name=first_name, last_name=last_name).exists():
+            raise forms.ValidationError(f"An employee with the name '{first_name} {last_name}' already exists.")
+        return cleaned_data
+
+    
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError(f"The username '{username}' is already taken. Please choose a different username.")
+        return username
 
     def save(self, commit=True):
         # Create the User account first
@@ -114,6 +132,12 @@ class AddEmployeeForm(forms.ModelForm):
             user.groups.add(position)
         return employee
     
+    def clean_birth_date(self):
+        birth_date = self.cleaned_data.get('birth_date')
+        if birth_date and birth_date.year > 2004 :
+            raise forms.ValidationError("Please enter a valid birth date correctly.")
+        return birth_date
+    
     def clean_hire_date(self):
         hire_date = self.cleaned_data.get('hire_date')
         if hire_date and hire_date > date.today():
@@ -133,15 +157,13 @@ class AddEmployeeForm(forms.ModelForm):
         if salary and salary <= 0:
             raise forms.ValidationError("Salary must be greater than zero.")
         return salary
-
-    def clean(self):
-        cleaned_data = super().clean()
-        first_name = cleaned_data.get('first_name')
-        last_name = cleaned_data.get('last_name')
-
-        # Check if another employee with the same first name and last name exists
-        if Employee.objects.filter(first_name=first_name, last_name=last_name).exists():
-            raise forms.ValidationError(f"An employee with the name '{first_name} {last_name}' already exists.")
-
-        return cleaned_data
-
+    
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        
+        # Use Django's built-in password validator
+        try:
+            validate_password(password)
+        except ValidationError as e:
+            raise forms.ValidationError(e.messages)
+        return password

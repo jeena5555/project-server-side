@@ -1,4 +1,7 @@
+let errorMessage = document.querySelector('.name .error-message');
+
 function renderEditInventory(itemId) {
+  errorMessage?.remove();
   const itemCard = document.querySelector(`[data-id="${itemId}"]`);
 
   if (itemCard) {
@@ -36,34 +39,98 @@ function renderAddInventory() {
   if (addFormContainer) {
     addFormContainer.classList.remove('hidden');
   }
+
+  const addInventoryForm = document.querySelector('#add-inventory-form form');
+  if (addInventoryForm) {
+    addInventoryForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(addInventoryForm);
+
+      fetch(addInventoryForm.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          window.location.reload(); 
+        } else {
+          handleFormErrors(data.errors);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    });
+  }
+}
+
+function handleFormErrors(errors) {
+  document.querySelectorAll('.error-message').forEach(error => error.remove());
+
+  for (let field in errors) {
+    let fieldElement = document.querySelector(`#add-inventory-form [name="${field}"]`);
+    if (fieldElement) {
+      let errorMessage = document.createElement('p');
+      errorMessage.classList.add('text-red-500', 'text-sm', 'mt-2', 'error-message');
+      errorMessage.textContent = errors[field];
+      fieldElement.parentElement.appendChild(errorMessage);
+    }
+  }
 }
 
 
 function updateInventory() {
   const itemId = document.getElementById('edit-form').getAttribute('data-item-id');
-  const updatedItem = {
-    name: document.getElementById('inventory-name').value,
-    price: parseFloat(document.getElementById('inventory-price').value),
-    quantity: parseInt(document.getElementById('inventory-quantity').value, 10),
-  };
+  const nameInput = document.querySelector('#edit-inventory-form input[name="name"]');
+  const enteredName = nameInput.value.trim().toLowerCase();
 
-  fetch(`/inventory/update/${itemId}/`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-    },
-    body: JSON.stringify(updatedItem),
-  })
-    .then((response) => {
-      if (response.ok) {
-        console.log('Inventory updated successfully');
-        window.location.reload(); // Reload the page to see the updated inventory
-      } else {
-        console.error('Failed to update inventory:', response.statusText);
+  const isDuplicate = inventoryNames.some((name, index) => {
+      const itemIdFromList = document.querySelectorAll('.item-card')[index].dataset.id;
+      return name === enteredName && itemIdFromList !== itemId;
+  });
+
+  if (isDuplicate) {
+      // let errorMessage = document.querySelector('.name .error-message');
+      if (!errorMessage) {
+          errorMessage = document.createElement('p');
+          errorMessage.classList.add('text-red-500', 'text-sm', 'mt-2', 'error-message');
+          errorMessage.textContent = `The '${nameInput.value}' already exists.`;
+          nameInput.parentElement.appendChild(errorMessage);
       }
-    })
-    .catch((error) => console.error('Error:', error));
+      return;
+  } else {
+      // let errorMessage = document.querySelector('.name .error-message');
+      if (errorMessage) {
+          errorMessage.remove();
+      }
+
+      const updatedItem = {
+          name: document.getElementById('inventory-name').value,
+          price: parseFloat(document.getElementById('inventory-price').value),
+          quantity: parseInt(document.getElementById('inventory-quantity').value, 10),
+      };
+
+      fetch(`/inventory/update/${itemId}/`, {
+          method: 'PUT',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+          },
+          body: JSON.stringify(updatedItem),
+      })
+      .then(response => {
+          if (response.ok) {
+              console.log('Inventory updated successfully');
+              window.location.reload();
+          } else {
+              console.error('Failed to update inventory:', response.statusText);
+          }
+      })
+      .catch(error => console.error('Error:', error));
+  }
 }
 
 function deleteInventory() {

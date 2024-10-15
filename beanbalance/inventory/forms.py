@@ -32,6 +32,18 @@ class CategoryForm(forms.ModelForm):
     
     def clean_name(self):
         name = self.cleaned_data.get('name')
-        if Category.objects.filter(name__iexact=name).exists():
+        if Category.objects.filter(name=name).exists():
             raise forms.ValidationError(f"The '{name}' already exists.") 
         return name
+    
+    def clean_quantity(self):
+        quantity = self.cleaned_data.get('quantity')
+        if quantity and quantity < 0:
+            raise forms.ValidationError(f"Please enter quantity more than zero") 
+        return quantity
+    
+    def clean_price(self):
+        price = self.cleaned_data.get('price')
+        if price and price < 0:
+            raise forms.ValidationError(f"Please enter price more than zero") 
+        return price
