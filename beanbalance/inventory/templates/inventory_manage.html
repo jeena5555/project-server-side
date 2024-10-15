@@ -118,7 +118,7 @@
         <form id="edit-form" method="post" onsubmit="event.preventDefault(); updateInventory();">
             {% csrf_token %}
             <div class="name">
-                <p class="text-red-500 text-sm mt-2">{{ form.name.errors.0 }}</p>
+                {% comment %} <p class="text-red-500 text-sm mt-2">{{ form.name.errors.0 }}</p> {% endcomment %}
                 <label for="inventory-name" class="block mb-2">Name</label>
                 <input type="text" id="inventory-name" name="name" class="w-full p-2 border rounded" />
             </div>

@@ -157,7 +157,23 @@
           {% endif %}
           {{ form.birth_date.label_tag }}
           {{ form.birth_date }}
-        </div>  
+        </div>
+
+        <div class="hire_date">
+          {% if form.hire_date.errors %}
+          <p class="text-red-500 text-sm mt-2">{{ form.hire_date.errors.0 }}</p>
+          {% endif %}
+          {{ form.hire_date.label_tag }}
+          {{ form.hire_date }}
+        </div>
+
+        <div class="contact_number">
+          {% if form.contact_number.errors %}
+          <p class="text-red-500 text-sm mt-2">{{ form.contact_number.errors.0 }}</p>
+          {% endif %}
+          {{ form.contact_number.label_tag }}
+          {{ form.contact_number }}
+        </div>
 
         <div class="position">
           {{ form.position.label_tag }}

@@ -97,16 +97,19 @@ class AddEmployeeForm(forms.ModelForm):
             "salary",
         )
         
-    def clean(self):
-        cleaned_data = super().clean()
-        first_name = cleaned_data.get("first_name")
-        last_name = cleaned_data.get("last_name")
-
-        if Employee.objects.filter(first_name=first_name, last_name=last_name).exists():
-            raise forms.ValidationError(f"An employee with the name '{first_name} {last_name}' already exists.")
-        return cleaned_data
-
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get("first_name")
+        
+        if first_name and not first_name.isalpha():
+            raise forms.ValidationError("First name should not contain numbers.")
+        return first_name   
     
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get("last_name")     
+        if last_name and not last_name.isalpha():
+            raise forms.ValidationError("Last name should not contain numbers.")
+        return last_name
+ 
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if User.objects.filter(username=username).exists():

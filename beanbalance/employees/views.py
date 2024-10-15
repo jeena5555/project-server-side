@@ -27,10 +27,14 @@ class EmployeeView(View):
     def post(self, request):
         # Add a new employee
         form = AddEmployeeForm(request.POST)
+        
+        # ตรวจสอบว่าฟอร์มผ่านการตรวจสอบหรือไม่
         if form.is_valid():
             with transaction.atomic():
                 form.save()
-            return redirect('employee')  # Redirect to the employee list after adding a new item
+            return JsonResponse({'success': True, 'message': 'Employee added successfully.'})
+        return JsonResponse({'success': False, 'errors': form.errors})
+
         employees = Employee.objects.all()
         employee_positions = []
         for employee in employees:
@@ -41,7 +45,6 @@ class EmployeeView(View):
             "employee_positions": employee_positions,
             "form": form
         }
-        
         return render(request, self.template_name, context)
 
 

@@ -1,4 +1,5 @@
 let errorMessage = document.querySelector('.name .error-message');
+console.log('errorMessage', errorMessage)
 
 function renderEditInventory(itemId) {
   errorMessage?.remove();
@@ -85,8 +86,14 @@ function handleFormErrors(errors) {
 function updateInventory() {
   const itemId = document.getElementById('edit-form').getAttribute('data-item-id');
   const nameInput = document.querySelector('#edit-inventory-form input[name="name"]');
+  const priceInput = document.querySelector('#edit-inventory-form input[name="price"]');
+  const quantityInput = document.querySelector('#edit-inventory-form input[name="quantity"]');
+  
   const enteredName = nameInput.value.trim().toLowerCase();
+  const enteredPrice = parseFloat(priceInput.value);
+  const enteredQuantity = parseInt(quantityInput.value, 10);
 
+  // ตรวจสอบว่าชื่อซ้ำหรือไม่
   const isDuplicate = inventoryNames.some((name, index) => {
       const itemIdFromList = document.querySelectorAll('.item-card')[index].dataset.id;
       return name === enteredName && itemIdFromList !== itemId;
@@ -97,7 +104,7 @@ function updateInventory() {
       if (!errorMessage) {
           errorMessage = document.createElement('p');
           errorMessage.classList.add('text-red-500', 'text-sm', 'mt-2', 'error-message');
-          errorMessage.textContent = `The '${nameInput.value}' already exists.`;
+          errorMessage.textContent = `The name '${nameInput.value}' already exists.`;
           nameInput.parentElement.appendChild(errorMessage);
       }
       return;
@@ -106,32 +113,58 @@ function updateInventory() {
       if (errorMessage) {
           errorMessage.remove();
       }
-
-      const updatedItem = {
-          name: document.getElementById('inventory-name').value,
-          price: parseFloat(document.getElementById('inventory-price').value),
-          quantity: parseInt(document.getElementById('inventory-quantity').value, 10),
-      };
-
-      fetch(`/inventory/update/${itemId}/`, {
-          method: 'PUT',
-          headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-          },
-          body: JSON.stringify(updatedItem),
-      })
-      .then(response => {
-          if (response.ok) {
-              console.log('Inventory updated successfully');
-              window.location.reload();
-          } else {
-              console.error('Failed to update inventory:', response.statusText);
-          }
-      })
-      .catch(error => console.error('Error:', error));
   }
+
+  // ตรวจสอบว่า price และ quantity ต้อง >= 0
+  let priceError = document.querySelector('.price .error-message');
+  let quantityError = document.querySelector('.quantity .error-message');
+
+  // ลบข้อความข้อผิดพลาดก่อนหน้า
+  if (priceError) priceError.remove();
+  if (quantityError) quantityError.remove();
+
+  if (enteredPrice < 0) {
+      priceError = document.createElement('p');
+      priceError.classList.add('text-red-500', 'text-sm', 'mt-2', 'error-message');
+      priceError.textContent = "Price must be greater than or equal to 0.";
+      priceInput.parentElement.appendChild(priceError);
+      return;
+  }
+
+  if (enteredQuantity < 0) {
+      quantityError = document.createElement('p');
+      quantityError.classList.add('text-red-500', 'text-sm', 'mt-2', 'error-message');
+      quantityError.textContent = "Quantity must be greater than or equal to 0.";
+      quantityInput.parentElement.appendChild(quantityError);
+      return;
+  }
+
+  // ถ้าไม่มีข้อผิดพลาด ให้ส่งข้อมูลไปยังเซิร์ฟเวอร์
+  const updatedItem = {
+      name: nameInput.value,
+      price: enteredPrice,
+      quantity: enteredQuantity,
+  };
+
+  fetch(`/inventory/update/${itemId}/`, {
+      method: 'PUT',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+      },
+      body: JSON.stringify(updatedItem),
+  })
+  .then(response => {
+      if (response.ok) {
+          console.log('Inventory updated successfully');
+          window.location.reload(); // รีโหลดหน้าเพื่อดูข้อมูลอัปเดตใหม่
+      } else {
+          console.error('Failed to update inventory:', response.statusText);
+      }
+  })
+  .catch(error => console.error('Error:', error));
 }
+
 
 function deleteInventory() {
   const itemId = document.getElementById('edit-form').getAttribute('data-item-id');
