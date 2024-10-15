@@ -43,11 +43,24 @@
       </a>
     </div>
 
-    <div class="employee_manage">
-      <a href="{% url 'employee'%}" class="flex items-center p-4 hover:bg-[#404040] rounded-lg">
+    <div class="relative inline-block text-left">
+      <div class="flex items-center p-4 hover:bg-[#404040] rounded-lg cursor-pointer" onclick="employeesDropdown()">
         <i class="fa-solid fa-user mr-2"></i>
         <span>Employees</span>
-      </a>
+        <i class="fa-solid fa-caret-down ml-2"></i>
+      </div>
+
+      <!-- Dropdown menu (initially hidden) -->
+      <div id="employeesDropdown" class="hidden absolute right-0 mt-2 w-48 origin-top-right bg-gray-200 border border-gray-500 rounded-md shadow-lg z-10">
+        <div class="py-1">
+          <a href="{% url 'employee' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300">
+            <i class="fa-solid fa-people-roof pr-2"></i>Manage
+          </a>
+          <a href="{% url 'schedule' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300">
+            <i class="fa-solid fa-calendar-days pr-2"></i>Schedule
+          </a>
+        </div>
+      </div>
     </div>
   </nav>
 

@@ -25,4 +25,5 @@ urlpatterns = [
     path('menu/', include('menu.urls')),
     path('order/', include('order.urls')),
     path('dashboard/', include('dashboard.urls')),
+    path('schedule/', include('schedule.urls')),
 ]
