@@ -42,3 +42,10 @@ class ScheduleForm(forms.ModelForm):
     class Meta:
         model = Schedule
         fields = ['employee', 'date', 'status']
+
+EditScheduleForm = modelformset_factory(
+    Schedule,
+    form=ScheduleForm,
+    extra=0,
+    can_delete=True
+)
