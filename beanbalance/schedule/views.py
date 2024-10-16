@@ -74,7 +74,6 @@ class AddScheduleView(View):
     def get(self, request, day, month, year):
         schedule_date = date(year=int(year), month=int(month), day=int(day))
 
-        # Create the form with an initial value for the date field
         form = ScheduleForm(initial={'date': schedule_date})
 
         context = {
