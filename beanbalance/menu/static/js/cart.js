@@ -41,6 +41,10 @@ const cart = {
             }
             this.saveToLocalStorage();
             this.renderCart();
+
+            if (this.items.length === 0) {
+                window.location.href = '/menu/';
+            }
         }
     },
 
