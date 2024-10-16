@@ -10,7 +10,7 @@ import calendar
 
 class ScheduleView(LoginRequiredMixin, PermissionRequiredMixin, View):
     login_url = "/authen/"
-    permission_required = ["order.view_order"]
+    permission_required = ["schedule.view_schedule"]
 
     template_name = 'schedule.html'
 
@@ -84,7 +84,9 @@ class ScheduleView(LoginRequiredMixin, PermissionRequiredMixin, View):
         return schedule_data
 
 
-class AddScheduleView(View):
+class AddScheduleView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = "/authen/"
+    permission_required = ["schedule.add_schedule"]
     template_name = 'add_schedule.html'
 
     def get(self, request, day, month, year):
@@ -111,7 +113,10 @@ class AddScheduleView(View):
         return date(year=int(year), month=int(month), day=int(day))
 
 
-class EditScheduleView(View):
+class EditScheduleView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    login_url = "/authen/"
+    permission_required = ["schedule.change_schedule", "schedule.delete_schedule"]
+
     template_name = 'edit_schedule.html'
 
     def get(self, request, day, month, year):

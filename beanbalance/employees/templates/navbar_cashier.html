@@ -32,9 +32,16 @@
           </div>
       </div>
   </div>
+
+  <div class="schedule">
+    <a href="{% url 'schedule' %}" class="flex items-center p-4 hover:bg-[#404040] rounded-lg">
+        <i class="fa-solid fa-user mr-2"></i>
+        <span>Schedule</span>
+    </a>
+</div>
 </nav>
 
-<div class="user relative inline-block text-left pt-24">
+<div class="user relative inline-block text-left pt-20">
   <div class="flex justify-between items-center p-4 hover:bg-[#404040] rounded-lg cursor-pointer" onclick="logoutDropdown()">
       <div class="name flex gap-2">
           <span class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
