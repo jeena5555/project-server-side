@@ -46,7 +46,7 @@ class PaymentView(View):
         total = data.get('total')
         payment_method = data.get('payment_method')
 
-        employee = User.objects.get(id=1)
+        employee = User.objects.get(id=14)
 
         # Create an order
         order = Order.objects.create(
@@ -79,7 +79,7 @@ class PaymentView(View):
 
 class MenuManageView(View):
     template_name = "manage.html"
-    
+
     def get(self, request):
         add_category_form = CategoryForm()
         add_menu_form = MenuForm()
@@ -110,7 +110,7 @@ class MenuManageView(View):
             if add_menu_form.is_valid():
                 add_menu_form.save()
                 return redirect('manage')
-        
+
         # Ensure forms are re-rendered with errors if validation fails
         categories = Category.objects.all()
         menus = Menu.objects.all()
@@ -121,13 +121,13 @@ class MenuManageView(View):
             "menus": menus
         })
 
-    
+
 class editMenuView(View):
     def put(self, request, menu_id):
         try:
             body = json.loads(request.body)
             menu_item = get_object_or_404(Menu, id=menu_id)
-            
+
             menu_item.name = body.get('name')
             menu_item.description = body.get('description')
             menu_item.price = body.get('price')
@@ -136,17 +136,17 @@ class editMenuView(View):
             menu_item.save()
 
             return JsonResponse({'message': 'Menu updated successfully'})
-        
+
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-        
+
 class MenuDeleteView(View):
     def delete(self, request, menu_id):
         try:
             menu_item = get_object_or_404(Menu, id=menu_id)
             menu_item.delete()
             return JsonResponse({'message': 'Menu item deleted successfully'})
-        
+
         except Exception as e:
             # Return an error response with the exception message
             return JsonResponse({'error': str(e)}, status=500)
@@ -156,16 +156,16 @@ class CategoryUpdateView(View):
         try:
             body = json.loads(request.body)
             category = get_object_or_404(Category, id=category_id)
-            
+
             # Update category name
             category.name = body.get('name', category.name)
             category.save()
 
             return JsonResponse({'message': 'Category updated successfully'})
-        
+
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-        
+
 class CategoryDeleteView(View):
     def delete(self, request, category_id):
         try:

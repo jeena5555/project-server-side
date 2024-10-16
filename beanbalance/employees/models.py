@@ -24,4 +24,6 @@ class Employee(models.Model):
     contact_number = models.CharField(max_length=20)
     salary = models.DecimalField(max_digits=10, decimal_places=2)
     account = models.OneToOneField(User, on_delete=models.CASCADE)
-    schedule = models.ManyToManyField("Schedule")
+
+    def __str__(self):
+        return self.first_name

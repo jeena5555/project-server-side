@@ -1,0 +1,33 @@
+.table-calendar td {
+  width: calc(100% / 7); /* Divide width by the number of columns */
+  height: 110px; /* Set your desired height */
+}
+
+.status-item {
+  margin-top: 2px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.status-circle {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 10px; /* Space between the circle and text */
+  vertical-align: middle;
+}
+
+/* Styling for each specific status */
+.open-circle {
+  background-color: green;
+}
+
+.closed-circle {
+  background-color: red;
+}
+
+.full-circle {
+  background-color: orange;
+}
