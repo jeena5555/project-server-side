@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.views import View
 from .models import Employee
 from django.contrib.auth.models import Group
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from employees.forms import AddEmployeeForm
 import json
 from django.db import transaction
@@ -11,7 +12,9 @@ from django.contrib.auth import logout
 from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
 # Employee View to manage listing and adding employees
-class EmployeeView(View):
+class EmployeeView(LoginRequiredMixin, PermissionRequiredMixin,View):
+    login_url = "/authen/"
+    permission_required = ["employees.view_employee","employees.add_employee"]
     template_name = 'employee_manage.html'
 
     def get(self, request):
@@ -35,21 +38,11 @@ class EmployeeView(View):
             return JsonResponse({'success': True, 'message': 'Employee added successfully.'})
         return JsonResponse({'success': False, 'errors': form.errors})
 
-        employees = Employee.objects.all()
-        employee_positions = []
-        for employee in employees:
-            position = Group.user_set.through.objects.get(user_id=employee.account.id)
-            employee_positions.append({"employee": employee, "position": position})
-        
-        context = {
-            "employee_positions": employee_positions,
-            "form": form
-        }
-        return render(request, self.template_name, context)
-
 
 # Update employee view
-class EmployeeUpdateView(View):
+class EmployeeUpdateView(LoginRequiredMixin, PermissionRequiredMixin,View):
+    login_url = "/authen/"
+    permission_required = ["employees.change_employee"]
     def put(self, request, employee_id):
         try:
             body = json.loads(request.body)  # Parse JSON request body
@@ -84,7 +77,9 @@ class EmployeeUpdateView(View):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
-class EmployeeDeleteView(View):
+class EmployeeDeleteView(LoginRequiredMixin, PermissionRequiredMixin,View):
+    login_url = "/authen/"
+    permission_required = ["employees.delete_employee"]
     def delete(self, request, employee_id):
         try:
             # Get the employee object or return a 404 if not found
@@ -99,7 +94,8 @@ class EmployeeDeleteView(View):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
-class ChangePasswordView(PasswordChangeView):
+class ChangePasswordView(LoginRequiredMixin, PasswordChangeView):
+    login_url = "/authen/"
     template_name = 'password_change.html'
     success_url = reverse_lazy('login')  # Redirect to the login page after logout
 

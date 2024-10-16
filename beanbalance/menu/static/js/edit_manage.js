@@ -63,36 +63,113 @@ function renderAddMenu() {
   }
 }
 
-// Function to update an existing menu item
-// Function to update an existing menu item
 function updateMenu() {
   const menuId = document.getElementById('menu-edit-form').getAttribute('data-menu-id');
+  
+  // Clear previous errors
+  document.getElementById('error-name').style.display = 'none';
+  document.getElementById('error-price').style.display = 'none';
+  document.getElementById('error-description').style.display = 'none';
+  document.getElementById('error-category').style.display = 'none';
+
+  // Construct the updated menu object
   const updatedMenu = {
     name: document.getElementById('menu-name').value,
-    price: parseFloat(document.getElementById('menu-price').value),
+    price: parseFloat(document.getElementById('menu-price').value),  // Convert price to float
     description: document.getElementById('menu-description').value,
-    category: document.getElementById('menu-category').value,  // Assuming category is a dropdown with value as ID
+    category: parseInt(document.getElementById('menu-category').value),  // Convert category to integer
   };
+
   console.log('Updated Menu:', updatedMenu);
 
+  // Send the PUT request to the server
   fetch(`/menu/manage/update/${menuId}/`, {
-    method: 'PUT',  // Use POST instead of PUT
+    method: 'PUT',  // Use PUT for updates
     headers: {
       'Content-Type': 'application/json',
-      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token for security
     },
-    body: JSON.stringify(updatedMenu),
+    body: JSON.stringify(updatedMenu),  // Convert the updated menu data to JSON
   })
+  // console.log('response', response)
     .then((response) => {
-      if (response.ok) {
-        console.log('Menu updated successfully');
-        window.location.reload(); // Reload the page to see the updated menu
-      } else {
-        console.error('Failed to update menu:', response.statusText);
-      }
+      return response.json().then((data) => {
+        if (response.ok) {
+          console.log('Menu updated successfully');
+          window.location.reload(); // Reload the page to see the updated menu
+        } else if (data.error_message) {
+          console.log('data', data)
+          // Display error messages for specific fields
+          if (data.errors) {
+            if (data.errors.name) {
+              const errorElement = document.getElementById('error-name');
+              errorElement.innerText = data.errors.name;
+              errorElement.style.display = 'block';
+            }
+            if (data.errors.price) {
+              const errorElement = document.getElementById('error-price');
+              errorElement.innerText = data.errors.price;
+              errorElement.style.display = 'block';
+            }
+            if (data.errors.description) {
+              const errorElement = document.getElementById('error-description');
+              errorElement.innerText = data.errors.description;
+              errorElement.style.display = 'block';
+            }
+            if (data.errors.category) {
+              const errorElement = document.getElementById('error-category');
+              errorElement.innerText = data.errors.category;
+              errorElement.style.display = 'block';
+            }
+          } else {
+            // General error message if there are no specific field errors
+            alert(data.error_message);
+          }
+        }
+      });
     })
-    .catch((error) => console.error('Error:', error));
+    .catch((error) => {
+      console.error('Error:', error);
+      alert('An error occurred while updating the menu.');
+    });
 }
+
+// function updateMenu() {
+//   const menuId = document.getElementById('menu-edit-form').getAttribute('data-menu-id');
+  
+//   // Construct the updated menu object
+//   const updatedMenu = {
+//     name: document.getElementById('menu-name').value,
+//     price: parseInt(document.getElementById('menu-price').value),  // Convert price to float
+//     description: document.getElementById('menu-description').value,
+//     category: document.getElementById('menu-category').value,  // Assuming category is a dropdown with value as ID
+//   };
+//   console.log('Updated Menu:', updatedMenu);
+
+//   // Send the PUT request to update the menu
+//   fetch(`/menu/manage/update/${menuId}/`, {
+//     method: 'PUT',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token for security
+//     },
+//     body: JSON.stringify(updatedMenu),  // Send updated menu object
+//   })
+//     .then((response) => response.json())  // Parse the JSON response
+//     .then((data) => {
+//       if (data.message) {
+//         // If the menu was successfully updated
+//         console.log('Menu updated successfully');
+//         window.location.reload();  // Reload the page to reflect the changes
+//       } else if (data.error_message) {
+//         // If there was an error, display the error message
+//         const errorElement = document.querySelector('.text-red-500');  // Ensure this exists in the HTML
+//         errorElement.innerText = data.error_message;  // Show error message
+//         errorElement.style.display = 'block';  // Make the error message visible
+//       }
+//     })
+//     .catch((error) => console.error('Error:', error));
+// }
 
 
 // Function to delete a menu item
@@ -188,7 +265,7 @@ function editCategoryName(method) {
   }
 }
 
-function updateCategoryName(){
+function updateCategoryName() {
   const categoryId = document.getElementById('category-id').value;
   const updatedName = document.getElementById('category-name').value;
 
@@ -200,12 +277,17 @@ function updateCategoryName(){
     },
     body: JSON.stringify({ name: updatedName }),  // Send updated category name
   })
-    .then((response) => {
-      if (response.ok) {
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.message) {
+        // If the category is updated successfully
         console.log('Category updated successfully');
-        window.location.reload();  // Reload the page to see the updated category
-      } else {
-        console.error('Failed to update category:', response.statusText);
+        window.location.reload();
+      } else if (data.error_message) {
+        // Display the error message
+        const errorElement = document.querySelector('.text-red-500');
+        errorElement.innerText = data.error_message;  // Show error message
+        errorElement.style.display = 'block';  // Make sure the error element is visible
       }
     })
     .catch((error) => console.error('Error:', error));

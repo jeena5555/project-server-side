@@ -42,6 +42,12 @@ class MenuForm(forms.ModelForm):
         }
     def clean_name(self):
         name = self.cleaned_data.get('name')
-        if Category.objects.filter(name__iexact=name).exists():
+        if Menu.objects.filter(name__iexact=name).exists():
             raise forms.ValidationError(f"The '{name}' already exists.") 
         return name
+    
+    def clean_price(self):
+        price = self.cleaned_data.get('price')
+        if price and price < 0 :
+            raise forms.ValidationError(f"Please enter value more than zero") 
+        return price

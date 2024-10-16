@@ -19,7 +19,7 @@
                     <button
                         href="?category={{ category.name }}"
                         class="category-btn border-2 border-white text-white rounded-full bg-transparent hover:bg-white hover:text-black px-4 py-2 {% if selected_category == category.name %}bg-white text-black{% endif %}"
-                        id="category-id" onclick="renderEditCategoryName({{ category.id}}, '{{category.name}}')">
+                        id="category-id" onclick=" renderEditCategoryName({{ category.id}}, '{{category.name}}')">
                         {{ category.name }}
                     </button>
                 {% endfor %}
@@ -60,7 +60,7 @@
     </div>
 
     <!-- Add Category Form -->
-    <div id="add-category-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll hidden">
+    <div id="add-category-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll {% if add_category_form.errors %}block{% else %}hidden{% endif %}">
         <h2 class="text-2xl font-semibold mb-6">Add Category</h2>
         <form method="post" class="space-y-4">
             {% csrf_token %}
@@ -71,7 +71,7 @@
                 {{ add_category_form.name.label_tag }}
                 {{ add_category_form.name }}
             </div>
-            <button type="submit" name="form_type" value="category" class="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition duration-300">Add Category</button>
+            <button type="submit" name="category_submit_button" value="category" class="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition duration-300">Add Category</button>
         </form>
     </div>
     <!-- Edit Menu Form -->
@@ -79,17 +79,22 @@
         <h2 class="text-2xl font-semibold mb-6">Edit Menu</h2>
         <form method="post" class="space-y-4" id="menu-edit-form">
             {% csrf_token %}
+            <!-- Hidden field for Menu ID -->
+            <input type="hidden" id="menu-id">
             <!-- Menu Name -->
             <label for="menu-name">Name</label>
             <input type="text" id="menu-name" name="name" class="w-full p-2 mb-4 border rounded">
+            <div class="text-red-500" id="error-name" style="display:none;"></div>  <!-- Added missing id="error-name" -->
 
             <!-- Price -->
             <label for="menu-price">Price</label>
             <input type="text" id="menu-price" name="price" class="w-full p-2 mb-4 border rounded">
+            <div class="text-red-500" id="error-price" style="display: none;"></div>
 
             <!-- Description -->
             <label for="menu-description">Description</label>
             <textarea id="menu-description" name="description" class="w-full p-2 mb-4 border rounded"></textarea>
+            <div class="text-red-500" id="error-description" style="display: none;"></div>
 
             <!-- Category -->
             <label for="menu-category">Category</label>
@@ -98,6 +103,7 @@
                     <option value="{{ category.id }}">{{ category.name }}</option>
                 {% endfor %}
             </select>
+            <div class="text-red-500" id="error-category" style="display: none;"></div>
 
             <div class="flex justify-center border-t pt-4 mt-4">
                 <!-- Save Button -->
@@ -107,23 +113,63 @@
             </div>
         </form>
     </div>
+
     <!-- Add Menu Form -->
-    <div id="add-menu-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll hidden">
+    <div id="add-menu-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll {% if add_menu_form.errors %}block{% else %}hidden{% endif %}">
         <h2 class="text-2xl font-semibold mb-6">Add Menu</h2>
         <form method="post" class="space-y-4">
             {% csrf_token %}
-            {{ add_menu_form }}
-            <button type="submit" name="form_type" value="menu" class="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition duration-300">Add Menu</button>
+            {% if form.non_field_errors %}
+            <div class="error text-red-500">
+                <ul>
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            <div class="name">
+                {% if add_menu_form.name.errors %}
+                <p class="text-red-500 text-sm mt-2">{{ add_menu_form.name.errors.0 }}</p>
+                {% endif %}
+                {{ add_menu_form.name.label_tag }}
+                {{ add_menu_form.name }}
+            </div>
+            <div class="price">
+                {% if add_menu_form.price.errors %}
+                <p class="text-red-500 text-sm mt-2">{{ add_menu_form.price.errors.0 }}</p>
+                {% endif %}
+                {{ add_menu_form.price.label_tag }}
+                {{ add_menu_form.price }}
+            </div>
+            <div class="description">
+                {% if add_menu_form.description.errors %}
+                <p class="text-red-500 text-sm mt-2">{{ add_menu_form.description.errors.0 }}</p>
+                {% endif %}
+                {{ add_menu_form.description.label_tag }}
+                {{ add_menu_form.description }}
+            </div>
+            <div class="category">
+                {% if add_menu_form.category.errors %}
+                <p class="text-red-500 text-sm mt-2">{{ add_menu_form.category.errors.0 }}</p>
+                {% endif %}
+                {{ add_menu_form.category.label_tag }}
+                {{ add_menu_form.category }}
+            </div>
+      
+            <button type="submit" name="menu_submit_button" value="menu" class="w-full bg-black text-white py-3 rounded-full hover:bg-gray-800 transition duration-300">Add Menu</button>
         </form>
     </div>
     <!-- Edit Category Form -->
     <div id="edit-category-form" class="w-1/3 bg-gray-200 p-6 sticky top-0 h-screen overflow-y-scroll hidden">
         <h2 class="text-2xl font-semibold mb-6">Edit Category</h2>
         {% csrf_token %}
+        <div class="text-red-500" style="display:none;"></div>  <!-- Error message container -->
         <label for="category-name">Category Name:</label>
         <input type="text" id="category-name" name="name" class="w-full p-2 mb-4 border rounded">
-        <button type="button" onclick="editCategoryName('edit_category')" class="w-24 bg-black text-white py-3 rounded-full hover:bg-gray-800 mr-5">Save</button>
-        <button type="button" onclick="editCategoryName('delete_category')" class="w-24 bg-red-600 text-white py-3 rounded-full hover:bg-red-800">Delete</button>
+        <button type="button" onclick="updateCategoryName()" class="w-24 bg-black text-white py-3 rounded-full hover:bg-gray-800 mr-5">Save</button>
+        <button type="button" class="w-24 bg-red-600 text-white py-3 rounded-full hover:bg-red-800">Delete</button>
     </div>
+    
 
 {% endblock %}

@@ -130,11 +130,11 @@ function updateEmployee(event) {
   const birthDate = birthDateInput.value;
   const salary = parseFloat(salaryInput.value);
 
-  // ดึง account ปัจจุบันจาก employeeCard
+  // Retrieve current account from employeeCard
   const currentAccount = document.querySelector(`[data-id="${employeeId}"]`).dataset.account;
-  console.log('currentAccount : ', currentAccount)
+  console.log('currentAccount : ', currentAccount);
 
-  // ลบข้อความข้อผิดพลาดเก่า
+  // Clear previous error messages
   document.querySelectorAll('.error-message').forEach(error => error.remove());
 
   let hasError = false;
@@ -157,20 +157,20 @@ function updateEmployee(event) {
     hasError = true;
   }
 
-  // ดึงข้อมูล account ที่มีอยู่จาก data-account ที่ถูกตั้งไว้ใน DOM
+  // Retrieve existing accounts from the DOM
   const existingAccounts = Array.from(document.querySelectorAll('[data-account]'))
                                 .map(elem => elem.getAttribute('data-account'));
 
-  // Validate account (ห้ามซ้ำ แต่ไม่รวม account ปัจจุบันที่กำลังแก้ไข)
+  // Validate account (no duplicates except for the current one being edited)
   if (account !== currentAccount && existingAccounts.includes(account)) {
     let accountError = document.createElement('p');
     accountError.classList.add('text-red-500', 'text-sm', 'mt-2', 'error-message');
-    accountError.textContent = `The username '${duplicateName}' is already taken. Please choose a different username.`;
+    accountError.textContent = `The username '${account}' is already taken. Please choose a different username.`;
     accountInput.parentElement.appendChild(accountError);
     hasError = true;
   }
 
-  // Validate birth_date (ต้องเป็นวันที่ก่อนปี 2005)
+  // Validate birth_date (must be before 2005)
   const birthYear = new Date(birthDate).getFullYear();
   if (birthYear >= 2005) {
     let birthDateError = document.createElement('p');
@@ -180,7 +180,7 @@ function updateEmployee(event) {
     hasError = true;
   }
 
-  // Validate salary (ต้องมากกว่า 1)
+  // Validate salary (must be greater than 1)
   if (salary <= 1) {
     let salaryError = document.createElement('p');
     salaryError.classList.add('text-red-500', 'text-sm', 'mt-2', 'error-message');
@@ -189,12 +189,12 @@ function updateEmployee(event) {
     hasError = true;
   }
 
-  // ถ้ามีข้อผิดพลาด ให้หยุดการทำงาน
+  // If there are validation errors, stop form submission
   if (hasError) {
     return;
   }
 
-  // ถ้าไม่มีข้อผิดพลาด ให้ส่งข้อมูลไปยังเซิร์ฟเวอร์
+  // If no validation errors, send data to the server
   const updatedEmployee = {
     first_name: firstName,
     last_name: lastName,
@@ -209,18 +209,19 @@ function updateEmployee(event) {
       'Content-Type': 'application/json',
       'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
     },
-    body: JSON.stringify(updatedEmployee),  // ส่งข้อมูลพนักงานที่อัปเดต
+    body: JSON.stringify(updatedEmployee),  // Send updated employee data
   })
   .then(response => {
     if (response.ok) {
       console.log('Employee updated successfully');
-      window.location.reload();  // รีโหลดหน้าเพื่อดูข้อมูลที่อัปเดต
+      window.location.reload();  // Reload the page to see the updated employee
     } else {
       console.error('Failed to update employee:', response.statusText);
     }
   })
   .catch(error => console.error('Error:', error));
 }
+
 
 
 function deleteEmployee() {
