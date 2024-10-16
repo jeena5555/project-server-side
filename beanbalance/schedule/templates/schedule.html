@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tags %}
+
+{% block title %}Schedule{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+<div class="container mx-auto w-full flex bg-[#292C2D]">
+  <!-- Left Panel: Employee List -->
+  <div class="w-full text-white px-6 sticky top-0 h-screen overflow-y-scroll">
+    <div class="sticky top-0 z-40">
+      <!-- Manager Section -->
+      <div class="max-w-6xl mx-auto p-6 text-black">
+        <div class="flex justify-between">
+          <h1 class="text-4xl font-bold text-white">Schedule</h1>
+          <div class="filter-employee flex justify-between">
+            <form id="selectSalesTrends" class="flex items-center text-gray-500 font-semibold gap-4" method="get">
+                {% csrf_token %}
+                {{ form.select.label }} {{ form.select }}
+                <button type="submit" class="bg-gray-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-200">Submit</button>
+            </form>
+        </div>
+          <div class="status flex gap-5">
+            <p class="text-l font-semibold px-3 py-2 bg-green-200 rounded-xl"><span class="status-circle open-circle"></span>OPEN</p>
+            <p class="text-l font-semibold p-2 bg-red-200 rounded-xl"><span class="status-circle closed-circle"></span>CLOSED</p>
+            <p class="text-l font-semibold p-2 bg-orange-200 rounded-xl"><span class="status-circle full-circle"></span>FULL</p>
+          </div>
+        </div>
+
+        <div class="p-6 mt-7 bg-white shadow-lg rounded-lg text-black">
+          <div class="flex justify-center gap-8 mb-6">
+            <a href="{% url 'schedule' year=year month=month|add:'-1' %}" class="text-blue-500">
+              <i class="fa-solid fa-angles-left text-2xl"></i>
+            </a>
+            <h1 class="text-2xl font-semibold text-center text-black">{{ month_name }} {{ year }}</h1>
+            <a href="{% url 'schedule' year=year month=month|add:'1' %}" class="text-blue-500">
+              <i class="fa-solid fa-angles-right text-2xl"></i>
+            </a>
+          </div>
+
+          <div class="w-full overflow-x-auto">
+            <table class="table-auto w-full border-collapse border table-calendar">
+              <thead>
+                <tr class="bg-blue-100">
+                  <th class="border p-2 w-1/7 text-gray-500 bg-gray-100">Sunday</th>
+                  <th class="border p-2 w-1/7">Monday</th>
+                  <th class="border p-2 w-1/7">Tuesday</th>
+                  <th class="border p-2 w-1/7">Wednesday</th>
+                  <th class="border p-2 w-1/7">Thursday</th>
+                  <th class="border p-2 w-1/7">Friday</th>
+                  <th class="border p-2 w-1/7 text-gray-500 bg-gray-100">Saturday</th>
+                </tr>
+              </thead>
+              <tbody class="border">
+                {% for week in month_calendar %}
+                  <tr>
+                    {% for day in week %}
+                      <td class="text-center border align-top pt-1">
+                        {% if day != 0 %}
+                          <!-- Check if the current day matches today -->
+                          <div class="{% if today.year == year and today.month == month and today.day == day %}bg-blue-300 p-1 flex justify-center items-center mx-14 rounded-full{% endif %} p-1">
+
+                                <button {% if perms.schedule.add_schedule or perms.schedule.change_schedule or perms.schedule.delete_schedule %} class="hover:text-blue-300"
+                                    onclick="modifySchedule('{{ day }}', '{{ month_name }}', '{{ year }}', '{% if perms.schedule.add_schedule %}{% url 'add_schedule' day=day month=month year=year %}{% endif %}', '{% if perms.schedule.change_schedule %}{% url 'edit_schedule' day=day month=month year=year %}{% endif %}')" {% endif %}>
+                                    {{ day }}
+                                </button>
+
+                          </div>
+                          <div class="list-employee text-left pl-8">
+                            <ul>
+                              {% for schedule in schedule_data|get_item:day %}
+                                <li class="status-item">
+                                  <!-- Circle to represent the status -->
+                                  <span class="status-circle {% if schedule.status == 'OPEN' %}open-circle{% elif schedule.status == 'CLOSED' %}closed-circle{% elif schedule.status == 'FULL' %}full-circle{% endif %}"></span>
+                                  <!-- Employee's status and name -->
+                                  {{ schedule.employee.first_name }}
+                                </li>
+                              {% endfor %}
+                            </ul>
+                          </div>
+                        {% else %}
+                          <!-- Empty cell with gray background -->
+                          <div class="bg-gray-200 h-full"></div>
+                        {% endif %}
+                      </td>
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div id="myModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+            <div class="bg-white p-8 rounded-lg shadow-lg w-1/3">
+              <span id="closeModal" class="text-gray-500 hover:text-gray-800 float-right text-2xl cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+              </span>
+              <h2 class="text-2xl font-semibold mb-4 text-center text-gray-500">
+                Schedule for <span id="selectedDate" class="text-black"></span>
+              </h2>
+
+              <div class="button flex gap-5 items-center justify-center h-full">
+                <a id="addScheduleLink" href="#" class="add-schedule-emp bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600 transition duration-200">
+                  ADD
+                </a>
+                <a id="editScheduleLink" href="#" class="edit-schedule-emp bg-orange-500 text-white font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-200">
+                  EDIT
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <script>
+            // Function to open the modal and set the date
+            function modifySchedule(day, month, year, addScheduleUrl, editScheduleUrl) {
+              // Get modal element
+              var modal = document.getElementById("myModal");
+
+              // Get the element where the date will be shown
+              var dateDisplay = document.getElementById("selectedDate");
+
+              // Set the date inside the modal
+              dateDisplay.textContent = `${day} ${month} ${year}`;
+
+              // Get the base URL from Django without placeholders in the template
+              var addScheduleLink = document.getElementById("addScheduleLink");
+              var editScheduleLink = document.getElementById("editScheduleLink");
+
+              addScheduleLink.href = addScheduleUrl;
+              editScheduleLink.href = editScheduleUrl
+
+              // Show the modal
+              modal.classList.remove('hidden');
+              modal.classList.add('flex');
+            }
+
+            // Get the <span> element that closes the modal
+            var closeModal = document.getElementById("closeModal");
+
+            // When the user clicks on <span> (x), close the modal
+            closeModal.onclick = function() {
+              var modal = document.getElementById("myModal");
+              modal.classList.remove('flex');
+              modal.classList.add('hidden');
+            }
+
+            // When the user clicks anywhere outside the modal, close it
+            window.onclick = function(event) {
+              var modal = document.getElementById("myModal");
+              if (event.target == modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+              }
+            }
+          </script>
+
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

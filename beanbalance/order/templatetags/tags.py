@@ -33,3 +33,7 @@ def get_navbar(context):
             return "navbar_manager.html"
         elif user.groups.filter(name="Cashier").exists():
             return "navbar_cashier.html"
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
