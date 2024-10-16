@@ -104,16 +104,15 @@ class MenuManageView(LoginRequiredMixin, PermissionRequiredMixin,View):
 
     def post(self, request):
         if 'category_submit_button' in request.POST:
-            # Initialize only the category form with POST data, and menu form as an empty form
             add_category_form = CategoryForm(request.POST)
-            add_menu_form = MenuForm()  # Empty form, not processed
+            add_menu_form = MenuForm()
             if add_category_form.is_valid():
                 # Process category form
                 add_category_form.save()
                 return redirect('manage')
+
         elif 'menu_submit_button' in request.POST:
-            # Initialize only the menu form with POST data, and category form as an empty form
-            add_category_form = CategoryForm()  # Empty form, not processed
+            add_category_form = CategoryForm()
             add_menu_form = MenuForm(request.POST)
             if add_menu_form.is_valid():
                 # Process menu form
@@ -200,7 +199,6 @@ class MenuDeleteView(LoginRequiredMixin, PermissionRequiredMixin,View):
             return JsonResponse({'message': 'Menu item deleted successfully'})
 
         except Exception as e:
-            # Return an error response with the exception message
             return JsonResponse({'error': str(e)}, status=500)
 
 class CategoryUpdateView(LoginRequiredMixin, PermissionRequiredMixin,View):
@@ -208,7 +206,6 @@ class CategoryUpdateView(LoginRequiredMixin, PermissionRequiredMixin,View):
     permission_required = ["menu.change_category"]
     def put(self, request, category_id):
         try:
-            # Parse the request body
             body = json.loads(request.body)
             new_category_name = body.get('name')
 

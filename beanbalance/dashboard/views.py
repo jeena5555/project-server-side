@@ -55,14 +55,14 @@ class DashboardView(LoginRequiredMixin, View):
         orders_by_time = (
         Order.objects
         .filter(order_date=date)
-        .annotate(hour=TruncHour('order_time'))  # Group by hour
-        .values('hour')  # Select the hour
-        .annotate(total_sales=Sum('amount'))  # Calculate total sales for each hour
-        .order_by('-total_sales')  # Order by total sales in descending order
+        .annotate(hour=TruncHour('order_time'))
+        .values('hour')
+        .annotate(total_sales=Sum('amount'))
+        .order_by('-total_sales')
         )
 
         if orders_by_time.exists():
-            peek_time = orders_by_time.first()['hour']  # Get the hour with the highest sales
+            peek_time = orders_by_time.first()['hour']
             return peek_time
         else:
             return None
@@ -84,7 +84,7 @@ class DashboardView(LoginRequiredMixin, View):
         if date is None:
             date = now().date()
         total_amount = Order.objects.filter(order_date=date).aggregate(Sum('amount'))['amount__sum'] or 0
-        order_count = Order.objects.filter(order_date=date).count() or 1  # Avoid division by zero
+        order_count = Order.objects.filter(order_date=date).count() or 1 
         average_order_value = total_amount / order_count
         return round(average_order_value, 2)
 

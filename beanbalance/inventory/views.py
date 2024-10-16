@@ -6,7 +6,6 @@ from .models import Category
 from inventory.forms import CategoryForm
 import json
 
-# Inventory View to manage listing and adding categories
 class InventoryView(LoginRequiredMixin, PermissionRequiredMixin,View):
     login_url = "/authen/"
     permission_required = ["inventory.view_category", "inventory.add_category"]
@@ -17,7 +16,7 @@ class InventoryView(LoginRequiredMixin, PermissionRequiredMixin,View):
         inventory = Category.objects.all().order_by('quantity')
         form = CategoryForm()
         return render(request, self.template_name, {"inventory": inventory, "form": form})
-    
+
     def post(self, request):
         form = CategoryForm(request.POST)
         if form.is_valid():
@@ -27,7 +26,6 @@ class InventoryView(LoginRequiredMixin, PermissionRequiredMixin,View):
             # ส่งข้อผิดพลาดของฟอร์มกลับไปในรูปแบบ JSON
             return JsonResponse({'success': False, 'errors': form.errors})
 
-# Update inventory view
 class InventoryUpdateView(LoginRequiredMixin, PermissionRequiredMixin,View):
     login_url = "/authen/"
     permission_required = ["inventory.change_category"]
@@ -43,7 +41,6 @@ class InventoryUpdateView(LoginRequiredMixin, PermissionRequiredMixin,View):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
-# Note: If needed, you can also add delete functionality in a similar way:
 class InventoryDeleteView(LoginRequiredMixin, PermissionRequiredMixin,View):
     login_url = "/authen/"
     permission_required = ["inventory.delete_category"]
