@@ -5,6 +5,8 @@ from dashboard.forms import SelectSalesTrendsForm, GenerateReportForm
 from order.models import Order, OrderMenu
 from menu.models import Menu
 import json
+
+from django.utils import timezone
 from datetime import datetime, timedelta
 from django.db.models import Sum
 from django.utils.timezone import now
@@ -19,7 +21,7 @@ class DashboardView(LoginRequiredMixin, View):
     template_name = "dashboard_date.html"
 
     def get(self, request):
-        today = now().date()
+        today = timezone.localtime().date()
 
         form = GenerateReportForm(request.GET or {'date': today})
 

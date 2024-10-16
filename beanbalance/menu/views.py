@@ -11,8 +11,6 @@ from order.models import Order, OrderMenu, Payment
 from django.contrib.auth.models import User
 from menu.forms import CategoryForm, MenuForm
 
-
-
 import json
 
 # Create your views here.
@@ -20,7 +18,7 @@ import json
 class MenuView(LoginRequiredMixin, PermissionRequiredMixin,View):
     login_url = "/authen/"
     permission_required = ["menu.view_menu"]
-    
+
     template_name = "menu.html"
 
     def get(self, request):
@@ -42,8 +40,8 @@ class MenuView(LoginRequiredMixin, PermissionRequiredMixin,View):
 
 class PaymentView(LoginRequiredMixin, PermissionRequiredMixin, View):
     login_url = "/authen/"
-    permission_required = ["payment.view_payment"]
-    
+    permission_required = ["order.view_payment", "order.add_payment"]
+
     template_name = "payment.html"
     def get(self, request):
         return render(request, self.template_name)
@@ -54,13 +52,13 @@ class PaymentView(LoginRequiredMixin, PermissionRequiredMixin, View):
         total = data.get('total')
         payment_method = data.get('payment_method')
 
-        employee = User.objects.get(id=1)
+        employee = request.user
 
         # Create an order
         order = Order.objects.create(
             amount=total,
-            order_date=timezone.now().date(),
-            order_time=timezone.now().time(),
+            order_date=timezone.localtime().date(),
+            order_time=timezone.localtime().time(),
             employee=employee
         )
 
@@ -89,7 +87,7 @@ class MenuManageView(LoginRequiredMixin, PermissionRequiredMixin,View):
     login_url = "/authen/"
     permission_required = ["menu.view_menu", "menu.add_menu"]
     template_name = "manage.html"
-    
+
     def get(self, request):
         add_category_form = CategoryForm()
         add_menu_form = MenuForm()
@@ -121,10 +119,10 @@ class MenuManageView(LoginRequiredMixin, PermissionRequiredMixin,View):
                 # Process menu form
                 add_menu_form.save()
                 return redirect('manage')
-        
+
         categories = Category.objects.all()
         menus = Menu.objects.all()
-        
+
         context = {
             "add_category_form": add_category_form,
             "add_menu_form": add_menu_form,
@@ -139,42 +137,59 @@ class editMenuView(LoginRequiredMixin, PermissionRequiredMixin,View):
     def put(self, request, menu_id):
         try:
             body = json.loads(request.body)
-            print('Request Body:', body)  # ตรวจสอบว่าข้อมูลที่ถูกส่งเข้ามาคืออะไร
             name = body.get('name')
             price = body.get('price')
             description = body.get('description')
-            category = body.get('category')
-            
-             # Validate if all fields are present
-            if not all([name, price, description, category]):
-                return JsonResponse({'error': 'Missing fields in request'}, status=400)
+            category_id = body.get('category')
+
+            errors = {}
+
+            # Validate if all fields are present
+            if not name:
+                errors['name'] = 'Name is required.'
+            if not price:
+                errors['price'] = 'Price is required.'
+            if not description:
+                errors['description'] = 'Description is required.'
+            if not category_id:
+                errors['category'] = 'Category is required.'
+
             # Validate category (assuming it's a foreign key)
-            if not Category.objects.filter(id=category).exists():
-                return JsonResponse({'error_message': 'Category does not exist'}, status=400)
-            # try:
-            #     category = int(category)  # Convert category to integer
-            # except ValueError:
-            #     return JsonResponse({'error_message': 'Invalid category value'}, status=400)
-            if not Category.objects.filter(id=category).exists():
-                return JsonResponse({'error_message': 'Category does not exist'}, status=400)
+            if category_id and not Category.objects.filter(id=category_id).exists():
+                errors['category'] = 'Category does not exist.'
+
+            # Ensure the menu name is unique, excluding the current menu item
             if Menu.objects.filter(name=name).exclude(id=menu_id).exists():
-                return JsonResponse({'error': 'Menu name already exists'}, status=400)
-            if price is not None and float(price) <= 0:
-                return JsonResponse({'error': 'Menu price must be greater than 0'}, status=400)
-            
+                errors['name'] = 'Menu name already exists.'
+
+            # Validate price (ensure it's a valid float and greater than 0)
+            if price:
+                try:
+                    price = float(price)
+                    if price <= 0:
+                        errors['price'] = 'Menu price must be greater than 0.'
+                except ValueError:
+                    errors['price'] = 'Invalid price value.'
+
+            # If there are any errors, return them
+            if errors:
+                return JsonResponse({'errors': errors}, status=400)
+
+            # Get the menu item by ID and update it
             menu_item = get_object_or_404(Menu, id=menu_id)
             menu_item.name = name
             menu_item.description = description
             menu_item.price = price
-            menu_item.category_id = category
+            menu_item.category_id = category_id
 
+            # Save updated menu item
             menu_item.save()
 
             return JsonResponse({'message': 'Menu updated successfully'})
-        
+
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-        
+
 class MenuDeleteView(LoginRequiredMixin, PermissionRequiredMixin,View):
     login_url = "/authen/"
     permission_required = ["menu.delete_menu"]
@@ -183,38 +198,53 @@ class MenuDeleteView(LoginRequiredMixin, PermissionRequiredMixin,View):
             menu_item = get_object_or_404(Menu, id=menu_id)
             menu_item.delete()
             return JsonResponse({'message': 'Menu item deleted successfully'})
-        
+
         except Exception as e:
             # Return an error response with the exception message
             return JsonResponse({'error': str(e)}, status=500)
 
 class CategoryUpdateView(LoginRequiredMixin, PermissionRequiredMixin,View):
     login_url = "/authen/"
-    permission_required = ["category.change_category"]
+    permission_required = ["menu.change_category"]
     def put(self, request, category_id):
         try:
+            # Parse the request body
             body = json.loads(request.body)
             new_category_name = body.get('name')
-            
+
+            # Check if the new category name is empty
+            if not new_category_name:
+                return JsonResponse({'error_message': 'Category name cannot be empty'}, status=400)
+
+            # Check if the new category name already exists, excluding the current category
             if Category.objects.filter(name=new_category_name).exclude(id=category_id).exists():
                 return JsonResponse({'error_message': 'Category name already exists'}, status=400)
 
+            # Get the category by ID
             category = get_object_or_404(Category, id=category_id)
-            # Update category name
+
+            # Update the category name and save
             category.name = new_category_name
             category.save()
 
-            return JsonResponse({'message': 'Category updated successfully'})
-        
+            # Return a success message
+            return JsonResponse({'message': 'Category updated successfully'}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error_message': 'Invalid JSON format'}, status=400)
+
+        except Category.DoesNotExist:
+            return JsonResponse({'error_message': 'Category not found'}, status=404)
+
         except Exception as e:
-            # Return a JSON response with the error message
+            # Return a generic error message
             return JsonResponse({'error_message': str(e)}, status=500)
 
 
-        
+
 class CategoryDeleteView(LoginRequiredMixin, PermissionRequiredMixin,View):
     login_url = "/authen/"
-    permission_required = ["category.delete_category"]
+    permission_required = ["menu.delete_category"]
     def delete(self, request, category_id):
         try:
             category = get_object_or_404(Category, id=category_id)

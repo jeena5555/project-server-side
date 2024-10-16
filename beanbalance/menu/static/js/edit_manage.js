@@ -65,7 +65,7 @@ function renderAddMenu() {
 
 function updateMenu() {
   const menuId = document.getElementById('menu-edit-form').getAttribute('data-menu-id');
-  
+
   // Clear previous errors
   document.getElementById('error-name').style.display = 'none';
   document.getElementById('error-price').style.display = 'none';
@@ -91,15 +91,15 @@ function updateMenu() {
     },
     body: JSON.stringify(updatedMenu),  // Convert the updated menu data to JSON
   })
-  // console.log('response', response)
     .then((response) => {
       return response.json().then((data) => {
         if (response.ok) {
           console.log('Menu updated successfully');
           window.location.reload(); // Reload the page to see the updated menu
-        } else if (data.error_message) {
-          console.log('data', data)
-          // Display error messages for specific fields
+        } else {
+          console.log('Error:', data);
+
+          // Display field-specific error messages
           if (data.errors) {
             if (data.errors.name) {
               const errorElement = document.getElementById('error-name');
@@ -121,9 +121,9 @@ function updateMenu() {
               errorElement.innerText = data.errors.category;
               errorElement.style.display = 'block';
             }
-          } else {
-            // General error message if there are no specific field errors
-            alert(data.error_message);
+          } else if (data.error || data.error_message) {
+            // Handle general error
+            alert(data.error || data.error_message);
           }
         }
       });
@@ -134,42 +134,6 @@ function updateMenu() {
     });
 }
 
-// function updateMenu() {
-//   const menuId = document.getElementById('menu-edit-form').getAttribute('data-menu-id');
-  
-//   // Construct the updated menu object
-//   const updatedMenu = {
-//     name: document.getElementById('menu-name').value,
-//     price: parseInt(document.getElementById('menu-price').value),  // Convert price to float
-//     description: document.getElementById('menu-description').value,
-//     category: document.getElementById('menu-category').value,  // Assuming category is a dropdown with value as ID
-//   };
-//   console.log('Updated Menu:', updatedMenu);
-
-//   // Send the PUT request to update the menu
-//   fetch(`/menu/manage/update/${menuId}/`, {
-//     method: 'PUT',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,  // CSRF token for security
-//     },
-//     body: JSON.stringify(updatedMenu),  // Send updated menu object
-//   })
-//     .then((response) => response.json())  // Parse the JSON response
-//     .then((data) => {
-//       if (data.message) {
-//         // If the menu was successfully updated
-//         console.log('Menu updated successfully');
-//         window.location.reload();  // Reload the page to reflect the changes
-//       } else if (data.error_message) {
-//         // If there was an error, display the error message
-//         const errorElement = document.querySelector('.text-red-500');  // Ensure this exists in the HTML
-//         errorElement.innerText = data.error_message;  // Show error message
-//         errorElement.style.display = 'block';  // Make the error message visible
-//       }
-//     })
-//     .catch((error) => console.error('Error:', error));
-// }
 
 
 // Function to delete a menu item
@@ -249,25 +213,26 @@ function renderEditCategoryName(categoryId, categoryName) {
   else {
     console.error('Menu item not found for ID:', menuId);
   }
-  
-}
 
-function editCategoryName(method) {
-  switch (method) {
-    case 'edit_category':
-      updateCategoryName();
-      break;
-    case 'delete_category':
-      deleteCategory();
-      break;
-    default:
-      console.error('Invalid method:', method);
-  }
 }
 
 function updateCategoryName() {
   const categoryId = document.getElementById('category-id').value;
   const updatedName = document.getElementById('category-name').value;
+
+  // Select the error message div
+  const errorElement = document.querySelector('.error-message');
+
+  // Reset error message and hide the div initially
+  errorElement.style.display = 'none';
+  errorElement.innerText = '';
+
+  // Check if the category name is empty
+  if (!updatedName) {
+    errorElement.innerText = 'Category name cannot be empty';  // Show error message
+    errorElement.style.display = 'block';  // Make the error message div visible
+    return;  // Stop the function here
+  }
 
   fetch(`/menu/manage/category/update/${categoryId}/`, {
     method: 'PUT',
@@ -277,21 +242,26 @@ function updateCategoryName() {
     },
     body: JSON.stringify({ name: updatedName }),  // Send updated category name
   })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.message) {
+    .then((response) => response.json().then((data) => ({ status: response.status, data })))
+    .then(({ status, data }) => {
+      if (status === 200 && data.message) {
         // If the category is updated successfully
         console.log('Category updated successfully');
         window.location.reload();
-      } else if (data.error_message) {
+      } else {
         // Display the error message
-        const errorElement = document.querySelector('.text-red-500');
         errorElement.innerText = data.error_message;  // Show error message
-        errorElement.style.display = 'block';  // Make sure the error element is visible
+        errorElement.style.display = 'block';  // Make the error message div visible
       }
     })
-    .catch((error) => console.error('Error:', error));
+    .catch((error) => {
+      console.error('Error:', error);
+      errorElement.innerText = 'An unexpected error occurred';  // Show generic error message
+      errorElement.style.display = 'block';  // Make the error message div visible
+    });
 }
+
+
 
 function deleteCategory() {
   const categoryId = document.getElementById('category-id').value;

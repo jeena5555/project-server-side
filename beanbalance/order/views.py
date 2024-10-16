@@ -15,7 +15,7 @@ class OrderHistoryView(LoginRequiredMixin, PermissionRequiredMixin, View):
     template_name = "order_history.html"
 
     def get(self, request):
-        today = timezone.now().date()
+        today = timezone.localtime().date()
 
         form = DateFilterForm(request.GET or {'order_date': today})
 
