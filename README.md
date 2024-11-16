@@ -36,8 +36,8 @@ The **POS System Management for Cafe** allows cafe owners and staff to easily ma
 ## Setup and Installation
 
 ### Prerequisites
-- Python 3.x
-- Django 4.x or higher
+- Python 3.14
+- Django 5.1.1.
 - PostgreSQL
 
 ### 1. Clone the repository
