@@ -18,7 +18,7 @@ The **POS System Management for Cafe** allows cafe owners and staff to easily ma
 
 ## Features
 
-- **Order Management:** Track customer orders, view order details, and update the order status.
+- **Order Management:** Track customer orders, view order details.
 - **Menu Management:** Add, edit, or remove items from the cafe's menu.
 - **Payment System:** Process customer payments and keep a record of all transactions.
 - **Sales Reports:** Generate sales reports to track revenue over time.
@@ -29,17 +29,16 @@ The **POS System Management for Cafe** allows cafe owners and staff to easily ma
 
 - **Django** - Python web framework for developing the application.
 - **Python** - Programming language for server-side logic.
-- **SQLite/PostgreSQL** - Database for storing data (SQLite is used by default, can be configured to use PostgreSQL).
-- **HTML, CSS (Tailwind CSS)** - For rendering the front-end (if applicable).
-- **JavaScript (optional)** - For client-side interactivity (if used).
-- **Django REST Framework (optional)** - If the project includes API endpoints.
+- **SQLite/PostgreSQL** - Database for storing data.
+- **HTML, CSS (Tailwind CSS)** - For rendering the front-end.
+- **JavaScript** - For client-side interactivity).
 
 ## Setup and Installation
 
 ### Prerequisites
 - Python 3.x
 - Django 4.x or higher
-- Database (SQLite is used by default, but you can configure PostgreSQL or MySQL)
+- PostgreSQL
 
 ### 1. Clone the repository
 ```bash
